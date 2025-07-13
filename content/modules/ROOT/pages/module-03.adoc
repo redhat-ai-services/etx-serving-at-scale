@@ -1,0 +1,20 @@
+= Advanced Serving
+
+== Existing lab resources
+
+. RH AI BU MultiNode MultiGPU - GitHub +
+https://github.com/rh-aiservices-bu/multi-node-multi-gpu-poc[^]
+
+. RH AI BU MultiGPU LLMs +
+https://github.com/rh-aiservices-bu/multi-gpu-llms?tab=readme-ov-file#72-multi-node---multiple-gpu-demos[^]
+
+. AI on OpenShift Article +
+https://ai-on-openshift.io/odh-rhoai/nvidia-gpus/#aggregating-gpus-multi-gpu[^]
+
+== Potential Topics to Cover in the Lab
+
+[#multi_gpu]
+=== Multi-GPU
+
+[#multi_node]
+=== Multi-Node
