@@ -75,10 +75,8 @@ In the ```Additional serving runtime arguments``` add the following:
 [source,bash]
 --tensor-parallel-size=2
 
-+
+image::03-deploy-model-parameters.png[Runtime Arguments]
 
-
-+
 [NOTE]
 ====
 You can find the image container our model https://github.com/redhat-ai-services/modelcar-catalog/[here] alongside other ModelCar images that you can try.
