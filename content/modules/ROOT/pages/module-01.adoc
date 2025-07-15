@@ -4,6 +4,25 @@ High Level Architecture of MaaS to move to capability focus instead of product f
 
 image::MaaS.png[]
 
+== Workflow
+
+[source,text]
+----
+[User/Client App]
+     |
+     | (1) Auth → Keycloak (OAuth2)
+     ↓
+[Access Token]
+     |
+     | (2) API Call + Token → 3scale Gateway
+     ↓
+[3scale OIDC Plugin] --- verifies token with ---> Keycloak
+     |
+     | (3) Forward Authenticated Request
+     ↓
+[OpenShift AI Model Endpoint (Route)]
+----
+
 == 3scale and RHCL Current Capabilities (Noel)
 
 == Checklist of Capabilities (Kenny)
