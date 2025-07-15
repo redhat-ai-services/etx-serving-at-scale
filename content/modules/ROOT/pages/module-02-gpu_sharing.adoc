@@ -1,5 +1,19 @@
 = GPU Sharing
 
+== GPU Sharing Overview
+
+GPU sharing is a technique that allows multiple workloads to share a GPU. This is useful for small workloads that don't require full GPU power simultaneously. This can be broken down into three maing components: 
+
+- Time-slicing
+- Multi-Instance GPUs (MIG)
+- CUDA Multi-Process Service (MPS)
+
+.GPU Partitioning Strategies
+image::../assets/images/gpu-sharing-overview.png[GPU Sharing Overview, 600]
+
+
+== Pros and Cons of GPU Sharing Methods
+
 |===
 | Strategy | Benefits | Cons
 
