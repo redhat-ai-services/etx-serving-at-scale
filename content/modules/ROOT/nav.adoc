@@ -17,7 +17,7 @@
 ** xref:module-03.adoc#rhaiis_vs_rhoai[RHAIIS vs RHOAI Capabilities]
 ** xref:module-03.adoc#multi-node_vs_multi-gpu[Multi-node vs multi-GPU overview]
 ** xref:module-03.adoc#llm-requirements[LLM GPU Requirements]
-** xref:pages/module-03-single-node-multi-gpu.adoc[Multi-GPU Lab]
+** xref:module-03-single-node-multi-gpu.adoc[Multi-GPU Lab]
 ** xref:module-03.adoc#multi_node_lab[Multi-Node Lab]
 ** xref:module-03.adoc#accelerated_networking[Accelerated Networking Considerations]
 ** xref:module-03.adoc#observability[Observability]
