@@ -31,3 +31,17 @@ https://github.com/redhat-gpte-devopsautomation/lb1816-summit-llm-aas[^]
 
 * Keycloak
 * Customer provided
+
+== Checklist of Capabilities (Kenny)
+
+
+== Pattern Assumptions (kenny)
+
+
+
+== Architecture Diagram (Kenny)
+
+
+
+== 3scale and RHCL Current Capabilities (Noel)
+
