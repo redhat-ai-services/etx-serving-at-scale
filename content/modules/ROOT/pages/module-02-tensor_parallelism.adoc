@@ -1,13 +1,43 @@
 = Tensor Parallelism
 
-== Existing Slides
+== Tensor Parallelism Overview
 
-== Existing lab resources
+When a model is too big to fit on a single GPU, we can use various techniques to optimize the memory utilization.
 
-== Potential Topics to Cover in the Lab
+Among the different strategies, we can use Tensor Parallelism to distribute the model across multiple GPUs.
 
-=== Tensor Parallelism Overview
+Tensor parallelism is a technique used to fit large models across multiple GPUs. In Tensor Parallelism, each GPU processes a slice of a tensor and only aggregates the full tensor for operations requiring it.
 
-=== Model Sharding Strategies
+For example, when multiplying the input tensors with the first weight tensor, the matrix multiplication can be achieved by splitting the weight tensor column-wise, multiplying each column with the input separately, and then concatenating the separate outputs.
 
-=== Communication Optimization 
+These outputs are then transferred from the GPUs and concatenated to obtain the final result.
+
+== GPU parallelism techniques in vLLM
+Tensor parallelism
+Problem: Model exceeds single GPU capacity
+
+As models grow, a single GPU cannot accommodate them, necessitating multi-GPU strategies. Tensor parallelism (Figure 1) shards model weights across GPUs, allowing concurrent computation for lower latency and enhanced scalability.
+
+This approach, originally developed for training in Megatron-LM (Shoeybi et al., 2019), has been adapted and optimized in vLLM for inference workloads.
+
+Diagram illustrating column parallelism and row parallelism techniques.
+Figure 1: The tensor parallel approach.
+How it works
+Tensor parallelism relies on two primary techniques, illustrated in Figure 2:
+
+Column parallelism: Splitting weight matrices along columns and concatenating results after computation.
+Row parallelism: Splitting matrices along rows, summing partial results post-computation.
+Diagram illustrating tensor parallelism techniques: column and row parallelism.
+Figure 2: The two primary techniques that enable tensor parallelism.
+As a specific example, let’s break down how this parallelism works for the MLP (multi-layer perceptron) layers in Llama models:
+
+Column parallelism applies to up-projection operations.
+Element-wise activation functions (e.g., SILU) operate on sharded outputs.
+Row parallelism is used in down-projection, with an all-reduce operation to aggregate final results.
+Tensor parallelism ensures that inference computations are distributed across multiple GPUs, maximizing the memory bandwidth and compute available. When used, we can achieve latency improvements from effectively multiplying memory bandwidth. This occurs because sharding model weights allows multiple GPUs to access memory in parallel, reducing bottlenecks that a single GPU might encounter.
+
+Diagram showing latency improvements with tensor parallelism.
+Figure 3: How tensor parallelism distributes inference computations across multiple GPUs to achieve latency improvements (source).
+However, it requires high-bandwidth interconnects between each GPU, like NVLink or InfiniBand, to minimize overhead from the increased communication costs.
+
+== Communication Optimization 
