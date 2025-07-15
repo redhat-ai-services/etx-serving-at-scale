@@ -1,0 +1,56 @@
+== API Gateway Required Functionality
+
+=== SSE Handling
+Processing of SSE events for supporting streaming responses 
+<https://html.spec.whatwg.org/multipage/server-sent-events.html>
+
+=== Request Payload Transformation
+* Outgoing requests need to be modified to add vLLM token tracking 
+
+```
+    stream_options={
+                include_usage ==> Include usage on last response     
+                continuous_usage_stats  ==> Include usage on each chunk
+    }
+
+```
+
+* User ID headers to need to be added to requests   
+* Mandatory corporate custom HTTP headers
+
+=== Gathering metrics 
+** Request/Response count
+** Request/Response Latency
+** Token counts per request
+*** Token count for a prompt
+*** Token count for a completion
+*** Total token count
+
+
+=== Prometheus Integration
+** Kong example <https://developer.konghq.com/plugins/prometheus/>
+** APISix example <https://apisix.apache.org/docs/apisix/plugins/prometheus/> 
+
+=== Validation
+** OIDC validation
+** Application/Developer Token validation
+
+=== User Management
+
+
+
+
+== API Gateway Optional Functionality
+
+=== Rate Limiting
+Prevent users from hammering LLMs
+
+=== Request Prioritization
+Ensuring prioritization for critical applications/users
+
+=== Cost Management
+
+=== Corporate Guardrails
+Single point of entry for LLM requests
+
+
