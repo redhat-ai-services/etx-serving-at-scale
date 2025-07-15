@@ -5,5 +5,11 @@
 * xref:module-02.adoc[2. GPUaaS]
 
 * xref:module-03.adoc[3. Advanced Serving]
-** xref:module-03.adoc#multi_gpu[Multi-GPU]
-** xref:module-03.adoc#multi_node[Multi-Node]
+** xref:module-03.adoc#rhaiis_vs_rhoai[RHAIIS vs RHOAI Capabilities]
+** xref:module-03.adoc#multi-node_vs_multi-gpu[Multi-node vs multi-GPU overview]
+** xref:module-03.adoc#llm-requirements[LLM GPU Requirements]
+** xref:module-03.adoc#multi_gpu_lab[Multi-GPU Lab]
+** xref:module-03.adoc#multi_node_lab[Multi-Node Lab]
+** xref:module-03.adoc#accelerated_networking[Accelerated Networking Considerations]
+** xref:module-03.adoc#observability[Observability]
+** xref:module-03.adoc#workload_examples[Workload Examples]
