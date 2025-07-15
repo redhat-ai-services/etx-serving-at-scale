@@ -1,0 +1,13 @@
+= Expert Parallelism
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== Expert Parallelism Overview
+
+=== Mixture of Experts (MoE) Models
+
+=== Expert Routing and Load Balancing 

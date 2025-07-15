@@ -1,0 +1,13 @@
+= Data Parallelism
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== Data Parallelism Fundamentals
+
+=== Data Distribution Strategies
+
+=== Synchronization and Aggregation 

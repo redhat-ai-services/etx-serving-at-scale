@@ -1,0 +1,13 @@
+= Tensor Parallelism
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== Tensor Parallelism Overview
+
+=== Model Sharding Strategies
+
+=== Communication Optimization 

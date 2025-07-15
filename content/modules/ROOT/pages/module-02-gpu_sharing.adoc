@@ -1,0 +1,13 @@
+= GPU Sharing
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== GPU Sharing Overview
+
+=== GPU Resource Management
+
+=== Sharing Strategies 

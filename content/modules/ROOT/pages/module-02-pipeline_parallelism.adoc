@@ -1,0 +1,13 @@
+= Pipeline Parallelism
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== Pipeline Parallelism Fundamentals
+
+=== Implementation Strategies
+
+=== Pipeline Scheduling and Optimization 

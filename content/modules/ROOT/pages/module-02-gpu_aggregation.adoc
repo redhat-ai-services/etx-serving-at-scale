@@ -1,0 +1,13 @@
+= GPU Aggregation
+
+== Existing Slides
+
+== Existing lab resources
+
+== Potential Topics to Cover in the Lab
+
+=== GPU Aggregation Overview
+
+=== Multi-GPU Strategies
+
+=== Performance Optimization 
