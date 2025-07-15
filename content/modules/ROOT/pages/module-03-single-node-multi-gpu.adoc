@@ -18,7 +18,7 @@ Treating the model as an OCI artifact allows us to easily promote the model betw
 . Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}[OpenShift AI Dashboard] and select the `composer-ai-apps` project from the list of Data Science Projects
 
 +
-image::../assets/images/03-datascience-project.png[Composer AI Apps Project]
+image::03-datascience-project.png[Composer AI Apps Project]
 
 . Select the `Models` tab and click `Select single-model`
 
