@@ -1,13 +1,188 @@
-= MIG (Multi-Instance GPU)
+= MIG (Multi-Instance GPU): First-Time User Guide
 
-== Existing Slides
+[IMPORTANT]
+====
+This guide takes you from zero knowledge to confidently using MIG in production environments. Whether you're a system administrator, developer, or AI practitioner, this comprehensive tutorial will help you understand and implement MIG effectively.
+====
 
-== Existing lab resources
+== What is MIG and Why Should You Care?
 
-== Potential Topics to Cover in the Lab
+=== The Challenge: GPU Underutilization
 
-=== MIG Overview
+Modern GPUs like the NVIDIA A100, H100, and H200 are incredibly powerful, often containing 40GB-180GB of memory and thousands of CUDA cores. However, many workloads don't fully utilize these resources:
 
-=== MIG Configuration
+* A machine learning training job might only use 20% of GPU memory
+* Development and testing workloads often need just a fraction of GPU compute
+* Multiple users need guaranteed GPU access without interference
 
-=== MIG Profiles and Partitioning 
+Before MIG, your options were limited:
+* **Time-sharing**: Users take turns, leading to idle resources
+* **Memory oversubscription**: Risk of out-of-memory errors
+* **Full GPU allocation**: Wasteful for smaller workloads
+
+=== The Solution: Multi-Instance GPU (MIG)
+
+MIG allows you to partition a single physical GPU into up to 7 smaller, isolated "virtual GPUs" called **GPU Instances**. Each instance has:
+
+* **Dedicated memory**: No sharing or interference between instances
+* **Isolated compute resources**: Guaranteed streaming multiprocessors (SMs)
+* **Hardware-level isolation**: Each instance operates independently
+* **Quality of Service (QoS)**: Predictable performance for each workload
+
+Think of MIG as creating apartment units in a building - each tenant gets their own space with guaranteed resources, but they share the building's infrastructure efficiently.
+
+=== Real-World Benefits
+
+**For Cloud Service Providers:**
+* Increase GPU utilization from 30-40% to 80-90%
+* Offer multiple GPU tiers to customers
+* Provide guaranteed performance isolation
+
+**For Enterprises:**
+* Enable multiple teams to share expensive GPU resources
+* Isolate development/testing from production workloads
+* Optimize resource allocation across different project requirements
+
+**For AI/ML Teams:**
+* Run multiple experiments simultaneously
+* Provide dedicated resources for different model sizes
+* Eliminate resource contention between team members
+
+== Understanding MIG Architecture
+
+=== Core Concepts and Terminology
+
+Before diving into implementation, let's understand the key building blocks:
+
+==== Streaming Multiprocessor (SM)
+The fundamental compute unit of the GPU that executes instructions. Think of SMs as CPU cores for the GPU.
+
+==== GPU Memory Slice
+The smallest unit of GPU memory allocation, roughly 1/8th of total GPU memory including controllers and cache.
+
+==== GPU SM Slice  
+The smallest unit of compute allocation, roughly 1/7th of total streaming multiprocessors.
+
+==== GPU Instance (GI)
+A combination of memory slices and SM slices that creates an isolated partition. This is your "virtual GPU."
+
+==== Compute Instance (CI)
+A subdivision within a GPU Instance that can further split compute resources while sharing memory.
+
+=== How MIG Partitioning Works
+
+Let's use the A100-40GB as an example to understand partitioning:
+
+[source,text]
+----
+Physical A100-40GB GPU:
+├── 8 Memory Slices (8 × 5GB = 40GB)
+├── 7 SM Slices (98 SMs total)
+└── Various engines (NVDECs, encoders, etc.)
+----
+
+==== Creating GPU Instances
+
+You can combine memory and SM slices to create different GPU Instance profiles:
+
+[cols="1,1,1,1,1"]
+|===
+|Profile Name |Memory |SMs |Use Case |Max Instances
+
+|`1g.5gb`
+|1 slice (5GB)
+|1 slice (14 SMs)
+|Development, small inference
+|7
+
+|`2g.10gb`
+|2 slices (10GB)
+|2 slices (28 SMs)
+|Medium models, testing
+|3
+
+|`3g.20gb`
+|4 slices (20GB)
+|3 slices (42 SMs)
+|Large models, production inference
+|2
+
+|`4g.20gb`
+|4 slices (20GB)
+|4 slices (56 SMs)
+|Training small models
+|1
+
+|`7g.40gb`
+|8 slices (40GB)
+|7 slices (98 SMs)
+|Full GPU for large training
+|1
+|===
+
+== Hardware Compatibility and Requirements
+
+=== Supported GPU Products
+
+MIG is available on NVIDIA GPUs starting with the Ampere architecture:
+
+==== Ampere Architecture
+* **A100-SXM4** (40GB/80GB): Up to 7 instances
+* **A100-PCIE** (40GB/80GB): Up to 7 instances  
+* **A30** (24GB): Up to 4 instances
+
+==== Hopper Architecture
+* **H100-SXM5** (80GB/94GB): Up to 7 instances
+* **H100-PCIE** (80GB/94GB): Up to 7 instances
+* **H200-SXM5** (141GB): Up to 7 instances
+* **H200 NVL** (141GB): Up to 7 instances
+
+==== Blackwell Architecture
+* **B200** (180GB): Up to 7 instances
+* **RTX PRO 6000 Blackwell** (96GB): Up to 4 instances (supports graphics APIs)
+
+=== Driver and Software Requirements
+
+[cols="1,1,1"]
+|===
+|GPU Family |CUDA Version |Minimum Driver Version
+
+|A100/A30
+|CUDA 11
+|R525 (≥ 525.53)
+
+|H100/H200
+|CUDA 12
+|R450 (≥ 450.80.02)
+
+|B200
+|CUDA 12
+|R570 (≥ 570.133.20)
+
+|RTX PRO 6000 Blackwell
+|CUDA 12
+|R575 (≥ 575.51.03)
+|===
+
+=== System Requirements
+
+* **Operating System**: Linux distributions supported by CUDA
+* **Container Runtime** (if using containers):
+  - NVIDIA Container Toolkit v2.5.0+
+  - Docker/Podman with NVIDIA runtime
+* **Orchestration** (if using Kubernetes):
+  - NVIDIA K8s Device Plugin v0.7.0+
+  - NVIDIA GPU Feature Discovery v0.2.0+
+
+
+=== Additional Resources
+
+* **NVIDIA MIG User Guide**: https://docs.nvidia.com/datacenter/tesla/mig-user-guide/
+* **NVIDIA Container Toolkit**: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/
+* **Kubernetes Device Plugin**: https://github.com/NVIDIA/k8s-device-plugin
+* **DCGM Documentation**: https://docs.nvidia.com/datacenter/dcgm/
+* **Community Forums**: https://developer.nvidia.com/
+
+Remember: MIG is a powerful tool for GPU resource optimization. Start with simple configurations and gradually implement more complex setups as you gain experience. Happy computing!
+
+== MIG Profiles and Partitioning 

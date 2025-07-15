@@ -1,13 +1,66 @@
-= MPS (Multi-Process Service)
+= MPS (Multi-Process Service) - Getting Started Guide
 
-== Existing Slides
+== What is NVIDIA MPS?
 
-== Existing lab resources
+The Multi-Process Service (MPS) is an alternative, binary-compatible implementation of the CUDA Application Programming Interface (API). MPS enables multiple CUDA applications to run concurrently on the same GPU, improving overall GPU utilization and performance.
 
-== Potential Topics to Cover in the Lab
+=== Key Benefits
 
-=== MPS Overview
+* *Concurrent Execution*: Multiple CUDA contexts can share GPU resources simultaneously.
+* *Optimized Utilization*: Efficiently manages GPU resources across different applications.
+* *Seamless Context Switching*: Swiftly transitions between CUDA contexts to minimize overhead and maximize responsiveness.
+* *Maximized Throughput*: Ensures efficient allocation of GPU resources even when multiple workloads run concurrently.
 
-=== MPS Configuration
 
-=== MPS vs Other Sharing Methods 
+== Why MPS is Needed
+
+To balance workloads between CPU and GPU tasks, MPI processes are often allocated individual CPU cores in a multi-core CPU machine to provide CPU-core parallelization of potential Amdahl bottlenecks. As a result, the amount of work each individual MPI process is assigned may underutilize the GPU when the MPI process is accelerated using CUDA kernels. While each MPI process may end up running faster, the GPU is being used inefficiently. The Multi-Process Service takes advantage of the inter-MPI rank parallelism, increasing the overall GPU utilization.
+
+== What MPS Is
+
+MPS is a binary-compatible client-server runtime implementation of the CUDA API which consists of several components:
+
+* Control Daemon Process – The control daemon is responsible for starting and stopping the server, as well as coordinating connections between clients and servers.
+
+* Client Runtime – The MPS client runtime is built into the CUDA Driver library and may be used transparently by any CUDA application.
+
+* Server Process – The server is the clients’ shared connection to the GPU and provides concurrency between clients.
+
+== When Should You Use MPS?
+
+MPS is particularly beneficial when:
+
+* Individual processes don't generate enough work to saturate the GPU
+* Applications have a small number of blocks-per-grid or threads-per-grid
+* Running MPI jobs or other multi-process CUDA applications
+* In strong-scaling scenarios where work per process decreases but you want to maintain GPU efficiency
+
+=== Identifying Good Candidates
+
+Applications that benefit from MPS typically show:
+
+* Low GPU occupancy due to small kernel launches
+* Underutilized GPU compute capacity when running single processes
+* Multiple processes that could run concurrently on the same GPU
+
+== System Requirements
+
+Before getting started with MPS, ensure your system meets these requirements:
+
+* *Operating System*: Linux or QNX (MPS is not supported on Windows)
+* *GPU*: Compute capability 3.5 or higher (Kepler-based Tesla/Quadro GPUs or newer)
+* *CUDA*: Unified Virtual Addressing (UVA) must be available (default for 64-bit CUDA programs)
+* *Architecture*: Only Volta MPS is supported on Tegra platforms
+
+=== Important Limitations
+
+* Only one user per system can have an active MPS server
+* Exclusive-mode restrictions apply to the MPS server, not individual clients
+* Page-locked host memory is limited by tmpfs filesystem size (`/dev/shm`)
+
+== Additional Resources
+
+* https://docs.nvidia.com/deploy/mps/index.html[Official NVIDIA MPS Documentation]
+* `man nvidia-cuda-mps-control` - MPS control daemon manual
+* `man nvidia-smi` - GPU monitoring tool manual
+* NVIDIA Developer Forums for community support 
