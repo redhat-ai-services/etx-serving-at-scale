@@ -46,44 +46,135 @@ https://github.com/redhat-gpte-devopsautomation/lb1816-summit-llm-aas[^]
 
 Use Keycloak to authenticate users and then obtain a token to use with Red Hat 3scale API Management. This is a common architecture where Keycloak handles identity and access management (IAM), while 3scale handles API rate limiting, analytics, and monetization.
 
-Here's a high-level outline of how to set it up:
+Here are the high-level steps to configure Keycloak, 3scale, and OpenShift AI to authenticate and call a model through 3scale, ensuring secure, managed access to your AI model endpoints:
 
 ✅ Architecture Overview
-Client authenticates via Keycloak
-Receives an OAuth2 access token (JWT)
-Uses that token to call an API protected by 3scale
-3scale validates the token via a policy (e.g., OIDC, custom LUA)
+Keycloak – Identity provider (IdP) for OAuth2/OIDC authentication.
 
-🛠️ Setup Steps
-1. Configure Keycloak as Identity Provider
-Create a Realm and a Client in Keycloak
-Set the Client to use confidential or public access type depending on your scenario
-Enable standard flow (OAuth2 Authorization Code) or client credentials flow
+3scale API Management – Secures and manages the API (model endpoint).
 
-2. Enable OpenID Connect (OIDC) Integration in 3scale
-Option A: OIDC External Integration (Recommended)
-In 3scale Admin Portal:
-Go to Integration > Settings
-Select OpenID Connect as authentication method
-Provide Keycloak’s OIDC Discovery URL (e.g., https://<keycloak-host>/realms/<realm-name>/.well-known/openid-configuration)
-Map scopes/claims if needed
-3scale will now:
-Validate the JWT token
-Forward the request to the backend if valid
+OpenShift AI (RHODS) – Hosts your deployed AI model (via ModelMesh or custom service).
 
-3. Use the Token in API Calls
-After login, the client will receive a JWT access token from Keycloak. You can call 3scale-protected APIs like this:
-GET /your/api/endpoint HTTP/1.1
-Authorization: Bearer <keycloak-jwt-token>
+User/Client – Requests a token from Keycloak, then calls the model via 3scale using that token.
 
-Rate Limiting by Client
-You can:
-Use Keycloak client_id or user_id from token to uniquely identify users
-Map these to 3scale Application Plans for rate limits and quotas
+🔧 Step-by-Step Configuration
+🧩 1. Set up Keycloak as an Identity Provider
+Deploy Keycloak (if not already available):
 
-✅ Benefits of This Setup
-Decouples auth (Keycloak) from API management (3scale)
-Centralizes IAM
-Uses standards-based security (OAuth2, OIDC, JWT)
-Easy to federate with other IdPs (AD, Google, etc.) via Keycloak
+Use OpenShift Operator Hub or an external instance.
 
+Create a Realm:
+
+Name it (e.g., ai-realm).
+
+Create a Client (for your API consumer app):
+
+Client ID: ai-client
+
+Access Type: confidential
+
+Valid Redirect URIs: * (for testing) or your app URL
+
+Enable Standard Flow and Client Credentials
+
+Save the Client Secret
+
+Create Users/Roles (optional):
+
+Add users and assign roles or groups to manage access policies.
+
+🔐 2. Secure AI Model with OpenShift Route & Token Auth
+Deploy the Model via RHODS:
+
+Either use Jupyter + ModelMesh (recommended) or a custom Flask/FastAPI service.
+
+Expose via Route:
+
+Create a Route in OpenShift to expose the model endpoint.
+
+Ensure it’s protected by an OAuth2 token (Keycloak) or make it internal.
+
+Test endpoint locally with curl or Postman using a Bearer token.
+
+🛡️ 3. Configure 3scale to Manage the AI Model API
+Set up 3scale Admin Portal:
+
+Login to 3scale and create a new API Product (e.g., ai-model-api).
+
+Create Backend for Model Endpoint:
+
+Define the backend pointing to the OpenShift model URL (e.g., https://model-service.myproject.apps.cluster/model/predict).
+
+Create the Product:
+
+Link the backend.
+
+Set up application plans and methods (e.g., /predict).
+
+Set up OpenID Connect Auth (OIDC):
+
+Go to [Integration > Settings] of the product.
+
+Enable OpenID Connect.
+
+Use Keycloak Realm Info:
+
+Issuer: https://<keycloak-host>/realms/ai-realm
+
+JSON Web Key Set (JWKS) URL: https://<keycloak-host>/realms/ai-realm/protocol/openid-connect/certs
+
+Define Mapping Rules:
+
+Match API paths (e.g., /predict) to usage metrics.
+
+Update API Gateway Configuration:
+
+Promote the staging config to production.
+
+🧪 4. Test the Workflow
+Get an access token from Keycloak:
+
+bash
+Copy
+Edit
+curl -X POST 'https://<keycloak-host>/realms/ai-realm/protocol/openid-connect/token' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=ai-client' \
+  -d 'client_secret=<your-secret>' \
+  | jq
+Call the model via 3scale gateway:
+
+bash
+Copy
+Edit
+curl -X POST 'https://<3scale-api-gateway-url>/predict' \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"input": [your_input_data]}'
+3scale validates the token via OIDC, applies rate limits, and proxies to the model.
+
+🖼️ Visual Flow Diagram (simplified)
+plaintext
+Copy
+Edit
+[User/Client App]
+     |
+     | (1) Auth → Keycloak (OAuth2)
+     ↓
+[Access Token]
+     |
+     | (2) API Call + Token → 3scale Gateway
+     ↓
+[3scale OIDC Plugin] --- verifies token with ---> Keycloak
+     |
+     | (3) Forward Authenticated Request
+     ↓
+[OpenShift AI Model Endpoint (Route)]
+🧠 Optional Enhancements
+Use Red Hat SSO (Keycloak) as a managed offering if available.
+
+Configure Keycloak client scopes for more granular claims.
+
+Apply 3scale rate limits, alerts, and API analytics.
+
+Enable logging/monitoring via OpenShift Logging/Grafana/Prometheus.
