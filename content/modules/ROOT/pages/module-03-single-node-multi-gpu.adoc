@@ -1,6 +1,6 @@
 = Deploying a Model with vLLM on a single node with multiple GPUS
 
-In this section will will deploy a https://huggingface.co/ibm-granite/granite-3.3-8b-instruct[Granite 3.0 8B Instruct] model using vLLM.
+In this section will will deploy a https://huggingface.co/ibm-granite/granite-3.3-8b-instruct[Granite 3.3 8B Instruct] model using vLLM.
 
 For our Model Server we will be deploying a vLLM instance using a model packaged into an OCI container with ModelCar.
 
