@@ -2,7 +2,16 @@
 ** xref:module-01.adoc#api_gateway[API Gateway]
 ** xref:module-01.adoc#auth[Auth]
 
-* xref:module-02.adoc[2. GPUaaS]
+* xref:module-02.adoc[2. Distributed Serving]
+** xref:module-02.adoc#gpu_sharing[GPU Sharing]
+*** xref:module-02.adoc#timeslicing[Timeslicing]
+*** xref:module-02.adoc#mig[MIG]
+*** xref:module-02.adoc#mps[MPS]   
+** xref:module-02.adoc#gpu_aggregation[GPU Aggregation] 
+*** xref:module-02.adoc#pipeline_parallelism[Pipeline Parallelism] 
+*** xref:module-02.adoc#tensor_parallelism[Tensor Parallelism] 
+*** xref:module-02.adoc#data_parallelism[Data Parallelism] 
+*** xref:module-02.adoc#expert_parallelism[Expert Parallelism] 
 
 * xref:module-03.adoc[3. Advanced Serving]
 ** xref:module-03.adoc#rhaiis_vs_rhoai[RHAIIS vs RHOAI Capabilities]
