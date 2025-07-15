@@ -1,0 +1,45 @@
+= Red Hat AI Inference Server vs Red Hat OpenShift AI
+
+== Red Hat AI Inference Server
+
+Red Hat AI Inference Server (RHAIIS) is a stand alone SKU that includes a vLLM image that can be run on any container runtime, including third party OS's and K8s distributions.
+
+image::../assets/images/rhaiis-use-case.png[RHAIIS Use Case, 600]
+
+NOTE: Red Hat Services can help customers to deploy vLLM using RHAIIS images onto non-Red Hat systems, but we expect the customer to handle things like Docker, or configuring the GPU capabilities on the node/container runtime.
+
+RHAIIS's vLLM image can be added/run with OpenShift AI, but it is not currently shipped out of the box.
+
+IMPORTANT: RHAIIS's distribution of vLLM does support single node multi-gpu model serving, but it does not support multi-node model serving.  In order to do multi-node model serving, customers must use OpenShift AI.
+
+== Red Hat OpenShift AI
+
+
+
+== Version Comparison
+
+[cols="1,1,1,1"]
+|===
+| Product | Version | vLLM Image/Tag | vLLM Version
+
+| Red Hat AI Inference Server
+| 3.1
+| registry.redhat.io/rhaiis/vllm-cuda-rhel9:3.1
+| ???
+
+| Red Hat OpenShift AI
+| 2.22 (Stable)
+| quay.io/modh/vllm:rhoai-2.22-cuda
+| 0.9.0.1
+
+| Red Hat OpenShift AI
+| 2.19.1 (Stable)
+| quay.io/modh/vllm:rhoai-2.19-cuda
+| 0.8.5
+
+| Red Hat OpenShift AI
+| 2.16 (EUS)
+| quay.io/modh/vllm:???
+| ???
+
+|=== 
