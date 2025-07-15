@@ -1,43 +1,55 @@
 = Tensor Parallelism
 
-== Tensor Parallelism Overview
+== Overview
 
-When a model is too big to fit on a single GPU, we can use various techniques to optimize the memory utilization.
+As large language models continue to grow in size and complexity, they often exceed the memory capacity of a single GPU. Tensor parallelism is a distributed computing technique that addresses this challenge by sharding model weights across multiple GPUs, enabling concurrent computation for reduced latency and enhanced scalability.
 
-Among the different strategies, we can use Tensor Parallelism to distribute the model across multiple GPUs.
+In tensor parallelism, each GPU processes a slice of a tensor and only aggregates the full tensor when necessary for specific operations. This approach allows larger models to run efficiently across multiple devices while maintaining performance.
 
-Tensor parallelism is a technique used to fit large models across multiple GPUs. In Tensor Parallelism, each GPU processes a slice of a tensor and only aggregates the full tensor for operations requiring it.
+== How Tensor Parallelism Works
 
-For example, when multiplying the input tensors with the first weight tensor, the matrix multiplication can be achieved by splitting the weight tensor column-wise, multiplying each column with the input separately, and then concatenating the separate outputs.
+The core principle involves splitting weight matrices strategically:
 
-These outputs are then transferred from the GPUs and concatenated to obtain the final result.
+* **Column-wise splitting**: Weight tensors are divided along columns, with each GPU processing its portion of the matrix multiplication
+* **Result aggregation**: Individual GPU outputs are concatenated or summed to reconstruct the final result
+* **Minimal communication**: GPUs only need to communicate when aggregating results, reducing overhead
 
-== GPU parallelism techniques in vLLM
-Tensor parallelism
-Problem: Model exceeds single GPU capacity
+For example, during matrix multiplication with the first weight tensor, the computation is distributed by splitting the weight tensor column-wise. Each GPU multiplies its assigned columns with the input, and the separate outputs are then concatenated to produce the final result.
 
-As models grow, a single GPU cannot accommodate them, necessitating multi-GPU strategies. Tensor parallelism (Figure 1) shards model weights across GPUs, allowing concurrent computation for lower latency and enhanced scalability.
+== Tensor Parallelism in vLLM
 
-This approach, originally developed for training in Megatron-LM (Shoeybi et al., 2019), has been adapted and optimized in vLLM for inference workloads.
+vLLM implements tensor parallelism techniques originally developed for training in Megatron-LM (Shoeybi et al., 2019), but optimized specifically for inference workloads. This adaptation addresses the unique requirements of serving large language models in production environments.
 
-Diagram illustrating column parallelism and row parallelism techniques.
-Figure 1: The tensor parallel approach.
-How it works
-Tensor parallelism relies on two primary techniques, illustrated in Figure 2:
+.The tensor parallel approach
+image::../assets/images/gpu0.png[The tensor parallel approach, 600]
 
-Column parallelism: Splitting weight matrices along columns and concatenating results after computation.
-Row parallelism: Splitting matrices along rows, summing partial results post-computation.
-Diagram illustrating tensor parallelism techniques: column and row parallelism.
-Figure 2: The two primary techniques that enable tensor parallelism.
-As a specific example, let’s break down how this parallelism works for the MLP (multi-layer perceptron) layers in Llama models:
+=== Implementation Techniques
 
-Column parallelism applies to up-projection operations.
-Element-wise activation functions (e.g., SILU) operate on sharded outputs.
-Row parallelism is used in down-projection, with an all-reduce operation to aggregate final results.
-Tensor parallelism ensures that inference computations are distributed across multiple GPUs, maximizing the memory bandwidth and compute available. When used, we can achieve latency improvements from effectively multiplying memory bandwidth. This occurs because sharding model weights allows multiple GPUs to access memory in parallel, reducing bottlenecks that a single GPU might encounter.
+Tensor parallelism relies on two primary techniques for distributing computations:
 
-Diagram showing latency improvements with tensor parallelism.
-Figure 3: How tensor parallelism distributes inference computations across multiple GPUs to achieve latency improvements (source).
-However, it requires high-bandwidth interconnects between each GPU, like NVLink or InfiniBand, to minimize overhead from the increased communication costs.
+**Column Parallelism**:: 
+Weight matrices are split along columns, with each GPU processing its assigned portion. Results are concatenated after computation to reconstruct the full output.
 
-== Communication Optimization 
+**Row Parallelism**:: 
+Matrices are split along rows, with each GPU computing partial results. An all-reduce operation sums these partial results to produce the final output.
+
+.The two primary techniques that enable tensor parallelism
+image::../assets/images/gpu2.png[The two primary techniques that enable tensor parallelism, 600]
+
+=== Performance Benefits
+
+Tensor parallelism delivers significant performance improvements by:
+
+* **Memory bandwidth multiplication**: Multiple GPUs access memory in parallel, eliminating single-GPU bottlenecks
+* **Latency reduction**: Distributed computation reduces time-to-first-token and overall inference latency
+* **Scalability**: Larger models can be served that would otherwise be impossible on single devices
+
+.How tensor parallelism distributes inference computations across multiple GPUs to achieve latency improvements
+image::../assets/images/gpu3.png[Tensor parallelism distribution across GPUs, 600]
+
+=== Hardware Requirements
+
+Tensor parallelism requires high-bandwidth interconnects between GPUs to minimize communication overhead:
+
+* **NVLink**: NVIDIA's high-speed interconnect for optimal GPU-to-GPU communication
+* **Network topology**: Proper configuration ensures minimal latency during all-reduce operations

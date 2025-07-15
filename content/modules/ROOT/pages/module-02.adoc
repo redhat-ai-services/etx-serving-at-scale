@@ -23,9 +23,33 @@ To address these issues, vLLM provides:
 * *Data parallelism* to distribute data across multiple GPUs, with each GPU holding a copy of the model and processing different data portions concurrently.
 * *Expert parallelism* to assign specific experts to dedicated GPUs, ensuring efficient utilization and reducing redundancy while distributing batched sequences between GPUs for the attention layers, avoiding KV cache duplication to improve memory efficiency.
 
+== Choosing the Right Distributed Inference Strategy
 
+Before implementing distributed inference, it's essential to determine when to use it and which strategies are most appropriate. The decision depends on your model size, hardware resources, and performance requirements.
 
-In the next following sections, we will explore how to implement these parallelism techniques in vLLM for efficient distributed inference.
+=== Strategy Selection Guidelines
+
+**Single GPU (No Distributed Inference)**::
+If your model fits comfortably in a single GPU's memory, distributed inference is unnecessary. This is the simplest deployment option with minimal overhead.
+
+**Single-Node Multi-GPU (Tensor Parallelism)**::
+When your model exceeds single GPU capacity but fits within a single node with multiple GPUs, use tensor parallelism. Set the tensor parallel size equal to the number of available GPUs.
++
+.Example Configuration
+----
+# 4 GPUs in a single node
+tensor_parallel_size = 4
+----
+
+**Multi-Node Multi-GPU (Tensor + Pipeline Parallelism)**::
+For models that exceed single-node capacity, combine tensor parallelism with pipeline parallelism. The tensor parallel size represents GPUs per node, while pipeline parallel size represents the number of nodes.
++
+.Example Configuration
+----
+# 16 GPUs across 2 nodes (8 GPUs per node)
+tensor_parallel_size = 8
+pipeline_parallel_size = 2
+----
 
 == Useful links
 
@@ -35,10 +59,8 @@ https://developers.redhat.com/articles/2025/02/06/distributed-inference-with-vll
 . How We Optimized vLLM DeepSeek R1 - Open Infra Week Contributions +
 https://developers.redhat.com/articles/2025/03/19/how-we-optimized-vllm-deepseek-r1#open_infra_week_contributions[^]
 
-== Existing lab resources
-
 . GPU Partitioning Guide +
 https://github.com/rh-aiservices-bu/gpu-partitioning-guide[^]
 
-. Roadshow with GPUaaS +
-https://github.com/odh-labs/rhoai-roadshow-v2[^]
+
+
