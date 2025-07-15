@@ -1,77 +1,62 @@
-✅ Model as a Service (MaaS) Security Checklist
+Model as a Service (MaaS) Security Checklist
+
 1. Model Security
- Sign and verify model artifacts (e.g., using sigstore, cosign)
 
- Store models in a trusted registry or model repository
-
- Scan models for malicious code or unexpected behavior
-
- Use model provenance tracking (who trained, where, and how)
-
- Implement AIBOM (AI Bill of Materials) for transparency
-
- Monitor for model drift and adversarial inputs
+ * Sign and verify model artifacts (e.g., using sigstore, cosign)
+ * Store models in a trusted registry or model repository
+ * Scan models for malicious code or unexpected behavior
+ * Use model provenance tracking (who trained, where, and how)
+ * Implement AIBOM (AI Bill of Materials) for transparency
+ * Monitor for model drift and adversarial inputs
 
 2. Data Security
- Encrypt data in transit (TLS/SSL)
 
- Encrypt data at rest (e.g., OpenShift + KMS integration)
-
- Ensure differential privacy or anonymization if using real user data
-
- Apply access controls on training and inference data
+ * Encrypt data in transit (TLS/SSL)
+ *  Encrypt data at rest (e.g., OpenShift + KMS integration)
+ * Ensure differential privacy or anonymization if using real user data
+ * Apply access controls on training and inference data
 
 3. API & Endpoint Security
- Enforce authentication (Keycloak, OAuth2, OIDC)
 
- Use API Gateway (e.g., 3scale) for rate-limiting and throttling
-
- Validate all input payloads to prevent injection attacks
-
- Use service mesh (Istio or OpenShift Service Mesh) for secure service-to-service communication
+ * Enforce authentication (Keycloak, OAuth2, OIDC)
+ * Use API Gateway (e.g., 3scale) for rate-limiting and throttling
+ * Validate all input payloads to prevent injection attacks
+ * Use service mesh (Istio or OpenShift Service Mesh) for secure service-to-service communication
 
 4. Runtime & Infrastructure Security
- Run models in isolated environments (containers with seccomp/AppArmor)
 
- Use confidential containers or confidential computing (e.g., Intel SGX, AMD SEV)
-
- Monitor containers with runtime security tools (ACS - Advanced Cluster Security)
-
- Regularly patch and update base images and OS
+ * Run models in isolated environments (containers with seccomp/AppArmor)
+ * Use confidential containers or confidential computing (e.g., Intel SGX, AMD SEV)
+ * Monitor containers with runtime security tools (ACS - Advanced Cluster Security)
+ * Regularly patch and update base images and OS
 
 5. Authorization & Access Control
- Role-Based Access Control (RBAC) in OpenShift for model owners and users
 
- Implement multi-tenant isolation policies
-
- Use scoped tokens for API access with expiration
+ * Role-Based Access Control (RBAC) in OpenShift for model owners and users
+ * Implement multi-tenant isolation policies
+ * Use scoped tokens for API access with expiration
 
 6. Audit & Monitoring
- Enable audit logs for API access, model invocation, and data access
 
- Integrate with SIEM/logging (e.g., OpenShift + EFK stack, Splunk, or Graylog)
-
- Monitor resource usage for anomalies (e.g., unexpected model calls)
+ * Enable audit logs for API access, model invocation, and data access
+ * Integrate with SIEM/logging (e.g., OpenShift + EFK stack, Splunk, or Graylog)
+ * Monitor resource usage for anomalies (e.g., unexpected model calls)
 
 7. Compliance & Risk
- Conduct AI risk assessments (NIST AI RMF or ISO 42001)
 
- Ensure regulatory compliance (e.g., GDPR, HIPAA, COPPA, etc.)
-
- Maintain documentation for AI lifecycle and incident response
+ * Conduct AI risk assessments (NIST AI RMF or ISO 42001)
+ * Ensure regulatory compliance (e.g., GDPR, HIPAA, COPPA, etc.)
+ * Maintain documentation for AI lifecycle and incident response
 
 8. Supply Chain Security
- Use SBOM tools for dependencies (e.g., Syft, Grype)
+ 
+ * Use SBOM tools for dependencies (e.g., Syft, Grype)
+ * Scan third-party libraries used in models and inference services
+ * Validate model and container integrity during deployment (admission controllers)
 
- Scan third-party libraries used in models and inference services
-
- Validate model and container integrity during deployment (admission controllers)
-
-🏗️ Bonus: OpenShift AI-Specific Recommendations
-Use OpenShift GitOps to enforce policy-as-code for model deployment
-
-Apply OpenShift ACS (Advanced Cluster Security) policies to enforce build/deploy/runtime rules
-
-Secure model routes with OpenShift Routes + TLS + Keycloak Authz
-
-Use sealed secrets or Vault for credentials
+9.  OpenShift AI-Specific Recommendations
+ 
+ * Use OpenShift GitOps to enforce policy-as-code for model deployment
+ * Apply OpenShift ACS (Advanced Cluster Security) policies to enforce build/deploy/runtime rules
+ * Secure model routes with OpenShift Routes + TLS + Keycloak Authz
+ * Use sealed secrets or Vault for credentials
