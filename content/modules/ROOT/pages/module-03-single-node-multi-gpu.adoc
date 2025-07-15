@@ -23,12 +23,12 @@ image::03-datascience-project.png[Composer AI Apps Project]
 . Select the `Models` tab and click `Select single-model`
 
 +
-image::../assets/images/03-single-model-serving.png[Single Model]
+image::03-single-model-serving.png[Single Model]
 
 . Select `Deploy model`
 
 +
-image::../assets/images/03-deploy-model.png[Deploy Models]
+image::03-deploy-model.png[Deploy Models]
 
 . Enter the following information:
 
@@ -57,7 +57,7 @@ The name of the model server must be `vllm` in order for some of the configurati
 ====
 
 +
-image::../assets/images/03-deploy-model-configs.png[Model Options]
+image::03-deploy-model-configs.png[Model Options]
 
 . In the `Source model location` section, choose the option to `Create connection`.  Enter the following information:
 
@@ -74,7 +74,7 @@ In the ```Additional serving runtime arguments``` add the following:
 --tensor-parallel-size=2
 
 +
-image::../assets/images/03-deploy-model-data-connection.png[URI Connection]
+image::03-deploy-model-data-connection.png[URI Connection]
 
 +
 [NOTE]
@@ -124,7 +124,7 @@ To start will test our vLLM endpoint to make sure it is responding by accessing 
 . To start we will need to find the endpoint URL for the served model.  From the OpenShift AI Dashboard, navigate to the Models tab and click on the `Internal and external endpoint details` to find the URL.
 
 +
-image::../assets/images/03-deploy-model-route.png[Model endpoint]
+image::03-deploy-model-route.png[Model endpoint]
 
 +
 [NOTE]
