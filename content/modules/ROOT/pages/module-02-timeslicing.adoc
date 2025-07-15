@@ -1,13 +1,133 @@
-= Timeslicing
+= GPU Timeslicing
 
-== Existing Slides
+== Overview
 
-== Existing lab resources
+GPU timeslicing is a software-based GPU sharing technique that enables multiple workloads to share a single GPU by time-dividing access to GPU compute resources. Unlike hardware-based partitioning methods like Multi-Instance GPU (MIG), timeslicing provides temporal sharing where workloads get sequential access to the full GPU for short time slices.
 
-== Potential Topics to Cover in the Lab
+This approach is particularly valuable for:
+
+* **AI inference workloads** that don't fully utilize GPU resources
+* **Development and testing environments** requiring flexible GPU access
+* **Multi-tenant scenarios** where isolation requirements are less stringent
+* **Edge deployments** with limited GPU resources
+* **Cost optimization** by maximizing GPU utilization
+
+Timeslicing enables organizations to dramatically improve GPU utilization while reducing costs, making AI workloads more accessible and economical.
+
+== How Timeslicing Works
+
+=== Core Mechanism
+
+GPU timeslicing operates by:
+
+1. **Time Division**: The GPU scheduler allocates time slices to different workloads in a round-robin fashion
+2. **Context Switching**: When a workload's time slice ends, the GPU context is saved and the next workload's context is restored
+3. **Memory Sharing**: All workloads share the same GPU memory space without isolation
+4. **Equal Time Allocation**: By default, each workload receives an equal share of GPU compute time
+
+=== NVIDIA GPU Architecture Support
+
+Modern NVIDIA GPUs (Pascal architecture and newer) support compute preemption, enabling efficient timeslicing:
+
+* **Hardware preemption** allows the GPU to interrupt running kernels
+* **Context switching overhead** is minimized through hardware optimization
+* **Configurable time slices** can be adjusted based on workload requirements
+
+=== Timeslice Configuration
+
+The time slice duration can be configured through `nvidia-smi`:
+
+```bash
+# Configure time slice duration
+nvidia-smi compute-policy --set-timeslice=1  # SHORT (2ms)
+nvidia-smi compute-policy --set-timeslice=2  # MEDIUM (10ms) 
+nvidia-smi compute-policy --set-timeslice=3  # LONG (30ms)
+```
+
+=== Scheduling Behavior
+
+The GPU scheduler manages workload execution by:
+
+* **Equal sharing**: Each active process receives equal GPU time regardless of resource requests
+* **No proportional allocation**: Requesting more GPU "replicas" doesn't guarantee proportional compute time
+* **Memory contention**: All workloads compete for the same memory pool
+* **No fault isolation**: Errors in one workload can potentially affect others
+
+== vLLM and Timeslicing
+
+=== vLLM Architecture Overview
+
+vLLM is a high-performance LLM inference engine that can benefit significantly from GPU timeslicing for serving multiple models or handling multiple concurrent requests.
+
+Key vLLM components that interact with timeslicing:
+
+* **Continuous Batching**: vLLM's scheduler can work with timesliced GPUs to serve multiple requests
+* **PagedAttention**: Memory management that works efficiently with shared GPU memory
+* **KV Cache Management**: Optimized for memory-constrained environments common with timeslicing
+
+=== vLLM Timeslicing Benefits
+
+When using vLLM with timeslicing:
+
+* **Multiple Model Serving**: Different vLLM instances can serve different models on the same GPU
+* **Improved Throughput**: Better utilization through temporal multiplexing
+* **Cost Reduction**: Serve more models with fewer GPUs
+* **Flexibility**: Dynamic allocation of GPU resources based on demand
+
+=== vLLM Configuration for Timeslicing
+
+Configure vLLM for timesliced environments:
+
+```python
+# Reduced memory allocation for shared GPU
+engine = AsyncLLMEngine.from_engine_args(
+    EngineArgs(
+        model="llama-7b",
+        gpu_memory_utilization=0.5,  # Use only 50% of GPU memory
+        max_num_batched_tokens=1024,  # Smaller batch sizes
+        max_num_seqs=16,             # Fewer concurrent sequences
+    )
+)
+```
+
+=== vLLM Scheduling Considerations
+
+Recent research shows that vLLM's scheduling overhead can become significant:
+
+* **CPU Scheduling Overhead**: Up to 50% of total inference time in some cases
+* **Tensor Processing**: Major overhead from building input tensors and detokenization
+* **Optimization Opportunities**: Reduce scheduling frequency, optimize tensor operations
+
+For timesliced environments, consider:
+
+* Using larger batch sizes when GPU time is available
+* Implementing asynchronous tensor processing
+* Optimizing for burst workloads common in shared GPU scenarios
 
 === Timeslicing Fundamentals
 
+* Configure NVIDIA GPU timeslicing using nvidia-smi
+* Deploy multiple workloads on a single GPU
+* Monitor GPU utilization and context switching overhead
+* Compare performance with and without timeslicing
+
 === Configuration and Setup
 
-=== Performance Considerations 
+* Deploy NVIDIA GPU Operator with timeslicing configuration
+* Configure Kubernetes device plugin for GPU sharing
+* Set up node labeling for heterogeneous GPU configurations
+* Implement dynamic configuration updates
+
+=== Performance Considerations
+
+* Benchmark inference throughput with different timeslice configurations
+* Analyze latency characteristics under various loads
+* Optimize memory allocation for timesliced workloads
+* Implement monitoring and alerting for GPU utilization
+
+=== Advanced Scenarios
+
+* Deploy multiple vLLM instances serving different models
+* Implement cost optimization strategies using timeslicing
+* Configure mixed workloads (training and inference)
+* Set up auto-scaling based on GPU utilization metrics 
