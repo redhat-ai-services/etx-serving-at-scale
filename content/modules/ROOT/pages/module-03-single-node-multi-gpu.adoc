@@ -36,14 +36,15 @@ image::02-deploy-models.png[Deploy Models]
 [source,yaml]
 ----
 Model deployment name: vllm
-Serving runtime: vLLM ServingRuntime for KServe
+Serving runtime: vLLM NVIDIA GPU ServingRuntime for KServe
+Deployment mode: Advanced
 Number of model server replicas to deploy: 1
 Model server size: Custom
 CPUs requested: 4 Cores
 CPUs limit: 8 Cores
 Memory requested: 24 GiB
 Memory limit: 32 GiB
-Accelerator: nvidia-gpu
+Accelerator: NVIDIA GPU
 Number of accelerators: 2
 Make deployed models available through an external route: Checked
 Require token authentication: Unchecked
@@ -64,7 +65,7 @@ image::02-model-options.png[Model Options]
 [source,yaml]
 ----
 Connection type: URI - v1
-Connection name: granite-3-0-8b-instruct
+Connection name: granite-3-3-8b-instruct
 URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 ----
 
