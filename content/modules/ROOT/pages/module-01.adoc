@@ -1,4 +1,14 @@
-= MaaS
+= Model as a Service (MaaS)
+
+High Level Architecture of MaaS to move to capability focus instead of product focus
+
+image::MaaS.png[]
+
+== 3scale and RHCL Current Capabilities (Noel)
+
+== Checklist of Capabilities (Kenny)
+
+== Pattern Assumptions (kenny)
 
 == Existing Slides +
 . https://docs.google.com/presentation/d/1R38W2ZuRo7zsX58airHsbstOO7UCVc5iRbAV7T1DYgA/edit?usp=sharing[^]
@@ -32,85 +42,48 @@ https://github.com/redhat-gpte-devopsautomation/lb1816-summit-llm-aas[^]
 * Keycloak
 * Customer provided
 
-== Checklist of Capabilities (Kenny)
+== Keycloak and 3Scale
 
-
-== Pattern Assumptions (kenny)
-
-
-
-== Architecture Diagram (Kenny)
-
-Yes, you can use Keycloak to authenticate users and then obtain a token to use with Red Hat 3scale API Management. This is a common architecture where Keycloak handles identity and access management (IAM), while 3scale handles API rate limiting, analytics, and monetization.
+Use Keycloak to authenticate users and then obtain a token to use with Red Hat 3scale API Management. This is a common architecture where Keycloak handles identity and access management (IAM), while 3scale handles API rate limiting, analytics, and monetization.
 
 Here's a high-level outline of how to set it up:
 
 ✅ Architecture Overview
 Client authenticates via Keycloak
-
 Receives an OAuth2 access token (JWT)
-
 Uses that token to call an API protected by 3scale
-
 3scale validates the token via a policy (e.g., OIDC, custom LUA)
 
 🛠️ Setup Steps
 1. Configure Keycloak as Identity Provider
 Create a Realm and a Client in Keycloak
-
 Set the Client to use confidential or public access type depending on your scenario
-
 Enable standard flow (OAuth2 Authorization Code) or client credentials flow
 
 2. Enable OpenID Connect (OIDC) Integration in 3scale
-There are two ways to do this:
-
 Option A: OIDC External Integration (Recommended)
 In 3scale Admin Portal:
-
 Go to Integration > Settings
-
 Select OpenID Connect as authentication method
-
 Provide Keycloak’s OIDC Discovery URL (e.g., https://<keycloak-host>/realms/<realm-name>/.well-known/openid-configuration)
-
 Map scopes/claims if needed
-
 3scale will now:
-
 Validate the JWT token
-
 Forward the request to the backend if valid
-
-Option B: Custom LUA Policy (Advanced)
-Write a custom policy in the 3scale APIcast gateway that validates Keycloak tokens manually
-
-Useful if you need complex claim validations or token introspection
 
 3. Use the Token in API Calls
 After login, the client will receive a JWT access token from Keycloak. You can call 3scale-protected APIs like this:
-
-http
-Copy
-Edit
 GET /your/api/endpoint HTTP/1.1
 Authorization: Bearer <keycloak-jwt-token>
-🔐 Bonus: Rate Limiting by Client
+
+Rate Limiting by Client
 You can:
-
 Use Keycloak client_id or user_id from token to uniquely identify users
-
 Map these to 3scale Application Plans for rate limits and quotas
 
 ✅ Benefits of This Setup
 Decouples auth (Keycloak) from API management (3scale)
-
 Centralizes IAM
-
 Uses standards-based security (OAuth2, OIDC, JWT)
-
 Easy to federate with other IdPs (AD, Google, etc.) via Keycloak
-
-
-== 3scale and RHCL Current Capabilities (Noel)
 
