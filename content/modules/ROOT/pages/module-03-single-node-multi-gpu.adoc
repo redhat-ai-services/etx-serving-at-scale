@@ -69,12 +69,14 @@ Connection name: granite-3-3-8b-instruct
 URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 ----
 
+image::03-deploy-model-data-connection.png[URI Connection]
+
 In the ```Additional serving runtime arguments``` add the following:
 [source,bash]
 --tensor-parallel-size=2
 
 +
-image::03-deploy-model-data-connection.png[URI Connection]
+
 
 +
 [NOTE]
