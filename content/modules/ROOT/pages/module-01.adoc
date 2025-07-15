@@ -1,5 +1,8 @@
 = MaaS
 
+High Level Architecture
+image::MaaS.png[]
+
 == Existing Slides +
 . https://docs.google.com/presentation/d/1R38W2ZuRo7zsX58airHsbstOO7UCVc5iRbAV7T1DYgA/edit?usp=sharing[^]
 
@@ -45,7 +48,7 @@ Yes, you can use Keycloak to authenticate users and then obtain a token to use w
 
 Here's a high-level outline of how to set it up:
 
-image::MaaS.png[]
+
 
 ✅ Architecture Overview
 Client authenticates via Keycloak
