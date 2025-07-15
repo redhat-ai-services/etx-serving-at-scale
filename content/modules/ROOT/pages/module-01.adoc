@@ -81,20 +81,30 @@ Promote the staging config to production.
 🧪 4. Test the Workflow
 
  * Get an access token from Keycloak:
+
+[source,text]
+----
 curl -X POST 'https://<keycloak-host>/realms/ai-realm/protocol/openid-connect/token' \
   -d 'grant_type=client_credentials' \
   -d 'client_id=ai-client' \
   -d 'client_secret=<your-secret>' \
   | jq
+----
 
  * Call the model via 3scale gateway:
+
+[source,text]
+----
 curl -X POST 'https://<3scale-api-gateway-url>/predict' \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{"input": [your_input_data]}'
-3scale validates the token via OIDC, applies rate limits, and proxies to the model.
+----
+
+ * 3scale validates the token via OIDC, applies rate limits, and proxies to the model.
 
 🧠 Optional Enhancements
+
  * Use Red Hat SSO (Keycloak) as a managed offering if available.  
  * Configure Keycloak client scopes for more granular claims.  
  * Apply 3scale rate limits, alerts, and API analytics.  
@@ -137,13 +147,3 @@ https://github.com/redhat-gpte-devopsautomation/lb1816-summit-llm-aas[^]
 
 * Keycloak
 * Customer provided
-
-== Keycloak and 3Scale
-
-Use Keycloak to authenticate users and then obtain a token to use with Red Hat 3scale API Management. This is a common architecture where Keycloak handles identity and access management (IAM), while 3scale handles API rate limiting, analytics, and monetization.
-
-Here are the high-level steps to configure Keycloak, 3scale, and OpenShift AI to authenticate and call a model through 3scale, ensuring secure, managed access to your AI model endpoints:
-
-
-
-
