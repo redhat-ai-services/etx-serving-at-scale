@@ -14,7 +14,7 @@
 *** xref:module-02-expert_parallelism.adoc[Expert Parallelism] 
 
 * xref:module-03.adoc[3. Advanced Serving]
-** xref:module-03.adoc#rhaiis_vs_rhoai[RHAIIS vs RHOAI Capabilities]
+** xref:module-03-rhaiis_rhoai.adoc[RHAIIS vs RHOAI Capabilities]
 ** xref:module-03.adoc#multi-node_vs_multi-gpu[Multi-node vs multi-GPU overview]
 ** xref:module-03.adoc#llm-requirements[LLM GPU Requirements]
 ** xref:module-03-single-node-multi-gpu.adoc[Multi-GPU Lab]
