@@ -6,15 +6,15 @@ Red Hat AI Inference Server (RHAIIS) is a stand alone SKU that includes a vLLM i
 
 image::rhaiis-use-case.png[RHAIIS Use Case, 600]
 
-NOTE: Red Hat Services can help customers to deploy vLLM using RHAIIS images onto non-Red Hat systems, but we expect the customer to handle things like Docker, or configuring the GPU capabilities on the node/container runtime.
+NOTE: Red Hat Services can help customers to deploy vLLM using RHAIIS vLLM images onto non-Red Hat systems, but we expect the customer to handle things like Docker, or configuring the GPU capabilities on the node/container runtime.
 
-RHAIIS's vLLM image can be added/run with OpenShift AI, but it is not currently shipped out of the box.
+RHAIIS's vLLM image can be added/run with OpenShift AI, but it is not currently shipped out of the box.  In the future, we expect that RHOAI's vLLM distribution will align with the RHAIIS.
 
 IMPORTANT: RHAIIS's distribution of vLLM does support single node multi-gpu model serving, but it does not support multi-node model serving.  In order to do multi-node model serving, customers must use OpenShift AI.
 
 == Red Hat OpenShift AI
 
-
+OpenShift AI includes it's own distribution of vLLM
 
 == Version Comparison
 
