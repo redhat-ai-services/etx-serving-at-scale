@@ -1,6 +1,11 @@
 = GPU Aggregation
 
-== Existing Slides
+== GPU Aggregation Overview
+
+Compute workloads can benefit from using separate GPU partitions. The flexibility of GPU partitioning allows a single GPU to be shared and used by small, medium, and large-sized workloads. GPU partitions can be a valid option for executing Deep Learning workloads. An example is Deep Learning training and inferencing workflows, which utilize smaller datasets but are highly dependent on the size of the data/model, and users may need to decrease batch sizes.
+
+image::../assets/images/gpu-aggregation.png[GPU Aggregation, 600]
+
 
 == Existing lab resources
 

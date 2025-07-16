@@ -8,8 +8,8 @@
 *** xref:module-02-mig.adoc[MIG]
 *** xref:module-02-mps.adoc[MPS]   
 ** xref:module-02-gpu_aggregation.adoc[GPU Aggregation] 
-*** xref:module-02-pipeline_parallelism.adoc[Pipeline Parallelism] 
 *** xref:module-02-tensor_parallelism.adoc[Tensor Parallelism] 
+*** xref:module-02-pipeline_parallelism.adoc[Pipeline Parallelism] 
 *** xref:module-02-data_parallelism.adoc[Data Parallelism] 
 *** xref:module-02-expert_parallelism.adoc[Expert Parallelism] 
 
