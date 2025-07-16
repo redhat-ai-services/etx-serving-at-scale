@@ -1,6 +1,6 @@
 * xref:module-01.adoc[1. Model as a Service (Maas)]
-** xref:module-01-api-gateway-requirements.adoc[API Gateway Capabilities and Requirements]
-** xref:module-01-iam-requirements.adoc[IAM Capabilities and Requirements]
+** xref:module-01-api-gateway-reqs.adoc[API Gateway Capabilities and Requirements]
+** xref:module-01-iam-reqs.adoc[IAM Capabilities and Requirements]
 ** xref:module-01-maas-security.adoc[Security Considerations]
 
 * xref:module-02.adoc[2. Distributed Serving]
