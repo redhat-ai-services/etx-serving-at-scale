@@ -38,6 +38,10 @@ image::MaaS.png[]
 
 Name it (e.g., ai-realm).
 
+To find the admin user password it is in a secret, ie credential-keycloak-maas, so credential-(keycloakname)
+Created realm as maas-keycloakrealm
+
+
  * Create a Client (for your API consumer app):
 
 Client ID: ai-client
@@ -45,6 +49,7 @@ Access Type: confidential
 Valid Redirect URIs: * (for testing) or your app URL
 Enable Standard Flow and Client Credentials
 Save the Client Secret
+
 
  * Create Users/Roles (optional):
 
