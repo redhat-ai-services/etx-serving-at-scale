@@ -14,7 +14,14 @@ IMPORTANT: RHAIIS's distribution of vLLM does support single node multi-gpu mode
 
 == Red Hat OpenShift AI
 
-OpenShift AI includes it's own distribution of vLLM
+OpenShift AI includes it's own vLLM images that are not currently aligned with RHAIIS.  However, the RHOAI SKU includes an entitlement for RHAIIS and customers have the option to run RHAIIS vLLM images on OpenShift AI.
+
+OpenShift AI provides advanced management capabilities as compared to running vLLM on other platforms with abilities such as:
+
+* Secured API endpoints
+* Autoscaling and load balancing
+* Metrics collection with OpenShift Prometheus instance
+* GitOps managed
 
 == Version Comparison
 
