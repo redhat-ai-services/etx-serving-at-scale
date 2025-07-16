@@ -8,6 +8,7 @@ One of the first calculations needed to help understand if a model will run on a
 
 Most models 
 
+:stem:
 [stem] 
 ++++ 
 sqrt(4) = 2
