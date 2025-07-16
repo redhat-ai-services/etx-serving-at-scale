@@ -26,7 +26,7 @@ MIG allows you to partition a single physical GPU into up to 7 smaller, isolated
 
 Think of MIG as creating apartment units in a building - each tenant gets their own space with guaranteed resources, but they share the building's infrastructure efficiently.
 
-image::mig-overview.jpg[MIG Overview, 600]
+image::gpu-mig-overview.jpg[MIG Overview, 600]
 
 === Real-World Benefits
 
