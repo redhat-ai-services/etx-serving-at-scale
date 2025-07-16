@@ -1,0 +1,9 @@
+kind: Backend
+apiVersion: capabilities.3scale.net/v1beta1
+metadata:
+  name: llama70b
+  namespace: 3scale
+spec:
+  name: LLama70B
+  privateBaseURL: 'https://vllm-multi-node-llama-vllm.apps.cluster-v6bj4.v6bj4.sandbox2204.opentlc.com/'
+  systemName: llama70b

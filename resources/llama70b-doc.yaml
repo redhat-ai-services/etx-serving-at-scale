@@ -1,0 +1,15 @@
+apiVersion: capabilities.3scale.net/v1beta1
+kind: ActiveDoc
+metadata:
+  name: llama70b
+  namespace: 3scale
+  labels:
+    app.kubernetes.io/instance: 3scale
+spec:
+  activeDocOpenAPIRef:
+    url: 'https://raw.githubusercontent.com/redhat-gpte-devopsautomation/lb1816-summit-llm-aas/refs/heads/main/bootstrap/3scale/api_definitions/tinyllama-1dash1b-chat-v1dot0.json'
+  name: llama70b
+  productSystemName: llama70b
+  published: true
+  skipSwaggerValidations: true
+  systemName: llama70b

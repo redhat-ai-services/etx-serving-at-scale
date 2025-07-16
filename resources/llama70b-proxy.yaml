@@ -1,0 +1,8 @@
+kind: ProxyConfigPromote
+apiVersion: capabilities.3scale.net/v1beta1
+metadata:
+  name: llama70b
+  namespace: 3scale
+spec:
+  productCRName: llama70b
+  production: true

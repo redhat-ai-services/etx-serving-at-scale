@@ -1,0 +1,104 @@
+apiVersion: capabilities.3scale.net/v1beta1
+kind: Product
+metadata:
+  name: llama70b
+  namespace: 3scale
+spec:
+  name: LLama70B
+  systemName: llama70b
+  metrics:
+    hits:
+      description: Number of API hits
+      friendlyName: Hits
+      unit: hit
+  deployment:
+    apicastHosted:
+      authentication:
+        userkey:
+          authUserKey: Authorization
+          credentials: headers
+  backendUsages:
+    llama70b:
+      path: /
+  mappingRules:
+    - httpMethod: GET
+      increment: 1
+      metricMethodRef: health
+      pattern: /health
+    - httpMethod: POST
+      increment: 1
+      metricMethodRef: tokenize
+      pattern: /tokenize
+    - httpMethod: POST
+      increment: 1
+      metricMethodRef: detokenize
+      pattern: /detokenize
+    - httpMethod: GET
+      increment: 1
+      metricMethodRef: models
+      pattern: /v1/models
+    - httpMethod: GET
+      increment: 1
+      metricMethodRef: version
+      pattern: /version
+    - httpMethod: POST
+      increment: 1
+      metricMethodRef: chat/completions
+      pattern: /v1/chat/completions
+    - httpMethod: POST
+      increment: 1
+      metricMethodRef: completions
+      pattern: /v1/completions
+    - httpMethod: POST
+      increment: 1
+      metricMethodRef: embeddings
+      pattern: /v1/embeddings
+  policies:
+    - configuration:
+        allow_credentials: true
+        allow_headers:
+          - Authorization
+          - Content-type
+          - Accept
+        allow_methods: []
+        allow_origin: '*'
+      enabled: true
+      name: cors
+      version: builtin
+    - configuration: {}
+      enabled: true
+      name: remove-bearer
+      version: '0.1'
+    - configuration: {}
+      enabled: true
+      name: apicast
+      version: builtin
+    - configuration:
+        connect_timeout: 180
+        read_timeout: 180
+        send_timeout: 180
+      enabled: true
+      name: upstream_connection
+      version: builtin
+  methods:
+    chat/completions:
+      friendlyName: Chat Completions
+    completions:
+      friendlyName: Completions
+    detokenize:
+      friendlyName: Detokenize
+    embeddings:
+      friendlyName: Embeddings
+    health:
+      friendlyName: Health
+    models:
+      friendlyName: Models
+    tokenize:
+      friendlyName: Tokenize
+    version:
+      friendlyName: Version
+  applicationPlans:
+    standard:
+      appsRequireApproval: false
+      name: Standard Plan
+      published: true
