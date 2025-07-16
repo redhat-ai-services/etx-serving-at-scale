@@ -2,7 +2,7 @@
 
 High Level Architecture of MaaS to move to capability focus instead of product focus
 
-image::MaaS.png[]
+image::../assets/images/MaaS.png[]
 
 == Workflow for our specific reference architecture
 
