@@ -32,6 +32,6 @@ image::03-multi-node-multi-gpu.png[Multi Node Multi-GPU]
 
 Multi-node vLLM instances generally have worse performance compared to a single node equivalent due to the network being a bottleneck.
 
-For example, a model deployed on a single node with 8 GPUs will have better performance than a multi-node instance where each node has 4 GPUs.
+For example, a model deployed on a single node with 8 GPUs will have better performance than a multi-node instance with two nodes where each node has 4 GPUs.
 
 Some of these limitations can be overcome with high speed networking such as Infiniband, but it is always recommended to utilize single node instances whenever possible.
