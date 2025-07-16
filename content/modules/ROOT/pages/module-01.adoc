@@ -3,7 +3,7 @@
 Logical Architecture of MaaS to move to capability focus instead of product focus
 
 .Model as a Service
-image::../assets/images/MaaS-Id.png[]
+image::MaaS-Id.png[]
 
 == Overview
 
