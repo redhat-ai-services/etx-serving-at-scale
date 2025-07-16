@@ -45,7 +45,7 @@ CPUs limit: 8 Cores
 Memory requested: 24 GiB
 Memory limit: 32 GiB
 Accelerator: NVIDIA GPU
-Number of accelerators: 2
+Number of accelerators: 1
 Make deployed models available through an external route: Checked
 Require token authentication: Unchecked
 ----
@@ -58,7 +58,7 @@ The name of the model server must be `vllm` in order for some of the configurati
 
 +
 image::03-deploy-model-configs.png[Model Options]
-
+change me
 . In the `Source model location` section, choose the option to `Create connection`.  Enter the following information:
 
 +
@@ -71,12 +71,39 @@ URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 
 image::03-deploy-model-data-connection.png[URI Connection]
 
-In the ```Additional serving runtime arguments``` add the following:
+After creating the model serving instance, a ```vllm-predictor-00001-deployment-*``` pod will be spawned on the cluster in the ```vllm``` project:
+[source]
+oc get pods -n vllm
+NAME                                              READY   STATUS            RESTARTS   AGE
+vllm-predictor-00001-deployment-5cd766d5f-t52qm   0/4     PodInitializing   0          43s
+
+If we go ahead and see the logs for the pod, it will eventually fail:
+[source]
+ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request with the models's max seq len (131072), (20.00 GiB KV cache is needed, which is larger than the available KV cache memory (3.84 GiB). Based on the available memory,  Try increasing `gpu_memory_utilization` or decreasing `max_model_len` when initializing the engine.
+
+At this point, we need to add a second GPU to the pod to have access to more memory. From the ```Models``` tab, click on the three-dots menu on the right and then edit:
+
+
+Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
 [source,bash]
 --tensor-parallel-size=2
 
 image::03-deploy-model-parameters.png[Runtime Arguments]
 
+This will create an updated deployment called ```vllm-predictor-00002-deployment-*```: 
+```
+oc get pods -n vllm
+NAME                                               READY   STATUS    RESTARTS   AGE
+vllm-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
+
+oc logs -n vllm -f vllm-predictor-00002-deployment-6f7cdc67bd-8lhkn 
+INFO 07-16 07:53:42 [__init__.py:239] Automatically detected platform cuda.
+INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
+[...]
+INFO:     Started server process [4]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
 [NOTE]
 ====
 You can find the image container our model https://github.com/redhat-ai-services/modelcar-catalog/[here] alongside other ModelCar images that you can try.
