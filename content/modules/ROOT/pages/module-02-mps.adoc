@@ -1,5 +1,9 @@
 = MPS (Multi-Process Service) - Getting Started Guide
 
+[IMPORTANT]
+====
+MPS is not currently supported on OpenShift. 
+====
 == What is NVIDIA MPS?
 
 The Multi-Process Service (MPS) is an alternative, binary-compatible implementation of the CUDA Application Programming Interface (API). MPS enables multiple CUDA applications to run concurrently on the same GPU, improving overall GPU utilization and performance.
@@ -57,6 +61,13 @@ Before getting started with MPS, ensure your system meets these requirements:
 * Only one user per system can have an active MPS server
 * Exclusive-mode restrictions apply to the MPS server, not individual clients
 * Page-locked host memory is limited by tmpfs filesystem size (`/dev/shm`)
+
+== Application Considerations
+
+* MPS is not supported on OpenShift.
+* Dynamic parallelism is not supported. CUDA module load will fail if the module uses dynamic parallelism features.
+* Only 64-bit applications are supported. The MPS server will fail to start if the CUDA application is not 64-bit. The MPS client will fail CUDA initialization.
+* The NVIDIA Codec SDK: https://developer.nvidia.com/nvidia-video-codec-sdk is not supported under MPS on pre-Volta MPS clients.
 
 == Additional Resources
 
