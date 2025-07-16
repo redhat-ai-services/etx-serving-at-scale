@@ -95,4 +95,40 @@ For optimal performance with extremely large models, vLLM supports combining bot
 # 8 nodes, 8 GPUs per node, 64 total GPUs
 tensor_parallel_size = 8    # GPUs per node
 pipeline_parallel_size = 8  # Number of nodes
----- 
+----
+
+== Distributed Runtime Management
+
+vLLM supports distributed tensor-parallel and pipeline-parallel inference through flexible runtime management systems. The framework implements Megatron-LM's tensor parallel algorithm and provides multiple execution backends to handle distributed coordination.
+
+=== Execution Backends
+
+vLLM manages distributed runtime using two primary execution backends:
+
+**Multiprocessing Backend**::
+Python's native multiprocessing is used for single-node deployments when sufficient GPUs are available on the same node. This backend provides:
+* Lower overhead for single-node scenarios
+* No external dependencies beyond Python standard library
+* Automatic selection when conditions are met
+* Optimal for tensor parallelism within a single node
+
+**Ray Backend**::
+Ray is used for multi-node inference and complex distributed scenarios. This backend enables:
+* Multi-node multi-GPU deployments
+* Advanced scheduling and resource management
+* Fault tolerance and dynamic scaling
+* Required for pipeline parallelism across nodes
+
+=== Backend Selection Logic
+
+vLLM automatically selects the appropriate backend based on deployment configuration:
+
+**Default Behavior**::
+* **Multiprocessing**: Used when not running in a Ray placement group and sufficient GPUs are available on the same node for the configured `tensor_parallel_size`
+* **Ray**: Used for multi-node deployments or when multiprocessing conditions are not met
+
+**Manual Override**::
+The default backend selection can be overridden using:
+* `LLM` class: `distributed_executor_backend` argument
+* API server: `--distributed-executor-backend` argument
+* Values: `mp` for multiprocessing, `ray` for Ray
