@@ -25,8 +25,6 @@ The two types of data parallelism are:
 
 DDP is recommended because it reduces communication overhead between GPUs, efficiently utilizes each GPU, and scales to more than one machine.
 
-== How Data Parallelism Works
-
 == When to Use Data Parallelism
 
 Data parallelism significantly reduces training time by processing data in parallel, and it is scalable to the number of GPUs available. However, synchronizing results from each GPU can add overhead.
