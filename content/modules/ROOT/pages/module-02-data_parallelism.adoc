@@ -5,10 +5,39 @@
 Data Parallelism (DP) replicates the model across multiple GPUs. Data batches are evenly distributed between GPUs and the data-parallel GPUs process them independently. While the computation workload is efficiently distributed across GPUs, inter-GPU communication is required in order to keep the model replicas consistent between training steps.
 
 .Distributed Data Parallelism
-image::ddp.png[Distributed Data Parallelism, 600]
+image::ddp.gif[Distributed Data Parallelism, 600]
 
-== Distributed Data Parallelism Fundamentals
+The two types of data parallelism are: 
 
-Distributed Data Parallelism (DDP) keeps the model copies consistent by synchronizing parameter gradients across data-parallel GPUs before each parameter update. More specifically, it sums the gradients of all model copies using all-reduce communication collectives. 
+* DataParallel supports distributed training on a single machine with multiple GPUs.
+
+** The default GPU, GPU 0, reads a batch of data and sends a mini batch of it to the other GPUs.
+** An up-to-date model is replicated from GPU 0 to the other GPUs.
+** A forward pass is performed on each GPU and their outputs are sent to GPU 0 to compute the loss.
+** The loss is distributed from GPU 0 to the other GPUs for the backward pass.
+** The gradients from each GPU are sent back to GPU 0 and averaged.
+
+* DistributedDataParallel supports distributed training across multiple machines with multiple GPUs.
+
+** The main process replicates the model from the default GPU, GPU 0, to each GPU.
+** Each GPU directly processes a mini batch of data.
+** The local gradients are averaged across all GPUs during the backward pass.
+
+DDP is recommended because it reduces communication overhead between GPUs, efficiently utilizes each GPU, and scales to more than one machine.
+
+== How Data Parallelism Works
+
+== When to Use Data Parallelism
+
+Data parallelism significantly reduces training time by processing data in parallel, and it is scalable to the number of GPUs available. However, synchronizing results from each GPU can add overhead.
+
+* When you have enough GPUs to replicate the entire model
+* When you need to scale throughput rather than model size
+* In multi-user environments where isolation between request batches is beneficial
+
+=== Additional Resources
+
+* **Hugging face Parallelism Guide**: https://huggingface.co/docs/transformers/perf_train_gpu_many#data-parallelism
+* **NVIDIA Model Parllelismt**: https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/features/parallelisms.html#model-parallelism
 
 

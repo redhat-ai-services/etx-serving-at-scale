@@ -183,5 +183,3 @@ MIG is available on NVIDIA GPUs starting with the Ampere architecture:
 * **Community Forums**: https://developer.nvidia.com/
 
 Remember: MIG is a powerful tool for GPU resource optimization. Start with simple configurations and gradually implement more complex setups as you gain experience. Happy computing!
-
-== MIG Profiles and Partitioning 
