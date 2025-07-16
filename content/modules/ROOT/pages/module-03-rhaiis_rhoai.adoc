@@ -4,7 +4,7 @@
 
 Red Hat AI Inference Server (RHAIIS) is a stand alone SKU that includes a vLLM image that can be run on any container runtime, including third party OS's and K8s distributions.
 
-image::../assets/images/rhaiis-use-case.png[RHAIIS Use Case, 600]
+image::rhaiis-use-case.png[RHAIIS Use Case, 600]
 
 NOTE: Red Hat Services can help customers to deploy vLLM using RHAIIS images onto non-Red Hat systems, but we expect the customer to handle things like Docker, or configuring the GPU capabilities on the node/container runtime.
 
