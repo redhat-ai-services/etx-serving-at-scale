@@ -22,7 +22,7 @@ For example, in a 4-stage pipeline, Stage 1 processes layers 1-8, Stage 2 proces
 vLLM implements pipeline parallelism with advanced scheduling optimizations to address the inherent challenges of sequential processing. Unlike tensor parallelism, which can reduce latency through parallel computation, pipeline parallelism focuses on enabling deployment of models that would otherwise be impossible to serve.
 
 .Pipeline parallel approach with sequential stage processing
-image::../assets/images/gpu4.png[Pipeline parallel approach, 600]
+image::gpu4.png[Pipeline parallel approach, 600]
 
 === Implementation Techniques
 
@@ -38,7 +38,7 @@ Pipeline stages operate asynchronously, allowing multiple requests to be process
 vLLM automatically adjusts the number of layers per stage based on computational complexity and memory requirements to optimize performance across the pipeline.
 
 .Pipeline scheduling with micro-batch processing
-image::../assets/images/gpu6.png[Pipeline scheduling optimization, 600]
+image::gpu6.png[Pipeline scheduling optimization, 600]
 
 === Performance Characteristics
 
@@ -58,9 +58,6 @@ Pipeline parallelism provides different performance trade-offs compared to tenso
 * **Sequential processing**: Inherently higher latency than tensor parallelism due to sequential stage execution
 * **Pipeline depth**: Deeper pipelines increase latency but enable larger models
 * **Micro-batch trade-offs**: Smaller micro-batches reduce latency but may decrease throughput
-
-.Performance comparison between pipeline and tensor parallelism
-image::../assets/images/pipeline3.png[Pipeline vs tensor parallelism performance, 600]
 
 === Hardware Requirements
 

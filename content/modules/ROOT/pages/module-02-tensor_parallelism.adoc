@@ -21,7 +21,7 @@ For example, during matrix multiplication with the first weight tensor, the comp
 vLLM implements tensor parallelism techniques originally developed for training in Megatron-LM (Shoeybi et al., 2019), but optimized specifically for inference workloads. This adaptation addresses the unique requirements of serving large language models in production environments.
 
 .The tensor parallel approach
-image::../assets/images/gpu0.png[The tensor parallel approach, 600]
+image::gpu0.png[The tensor parallel approach, 600]
 
 === Implementation Techniques
 
@@ -34,7 +34,7 @@ Weight matrices are split along columns, with each GPU processing its assigned p
 Matrices are split along rows, with each GPU computing partial results. An all-reduce operation sums these partial results to produce the final output.
 
 .The two primary techniques that enable tensor parallelism
-image::../assets/images/gpu2.png[The two primary techniques that enable tensor parallelism, 600]
+image::gpu2.png[The two primary techniques that enable tensor parallelism, 600]
 
 === Performance Benefits
 
@@ -45,7 +45,7 @@ Tensor parallelism delivers significant performance improvements by:
 * **Scalability**: Larger models can be served that would otherwise be impossible on single devices
 
 .How tensor parallelism distributes inference computations across multiple GPUs to achieve latency improvements
-image::../assets/images/gpu3.png[Tensor parallelism distribution across GPUs, 600]
+image::gpu3.png[Tensor parallelism distribution across GPUs, 600]
 
 === Hardware Requirements
 
