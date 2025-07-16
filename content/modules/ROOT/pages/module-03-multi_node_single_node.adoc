@@ -35,3 +35,11 @@ Multi-node vLLM instances generally have worse performance compared to a single 
 For example, a model deployed on a single node with 8 GPUs will have better performance than a multi-node instance with two nodes where each node has 4 GPUs.
 
 Some of these limitations can be overcome with high speed networking such as Infiniband, but it is always recommended to utilize single node instances whenever possible.
+
+== Sharding Considerations
+
+Models cannot be sharded across an arbitrary number of GPUs.  The model itself needs to be devisable by the total number of GPUs.  Generally the `num_attention_heads` is the key characteristic that is required to be devisable by the total number of GPUs.  The `num_attention_heads` can generally be found in the models `config.json` file
+
+For example, https://huggingface.co/ibm-granite/granite-3.3-8b-instruct/blob/main/config.json[Granite 3.3 8b Instruct] has 32 attention heads.  This means that the model can be sharded by any number of GPUs that 32 is devisable by, such as 2, 4, or 8 GPUs.  However, the model cannot be deployed with 3 GPUs.
+
+Some models such as Mixture of Expert (MoE) models such as Llama 4, approach sharding the model in a different manner and may not have the same limitations.
