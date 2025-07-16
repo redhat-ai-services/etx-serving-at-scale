@@ -8,4 +8,9 @@ One of the first calculations needed to help understand if a model will run on a
 
 Most models 
 
+[stem] 
+++++ 
+sqrt(4) = 2
+++++
+
 stem:((P*4)/(32/Q))*1.2
