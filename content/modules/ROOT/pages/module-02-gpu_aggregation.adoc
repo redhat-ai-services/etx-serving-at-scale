@@ -6,13 +6,24 @@ Compute workloads can benefit from using separate GPU partitions. The flexibilit
 
 image::../assets/images/gpu-aggregation.png[GPU Aggregation, 600]
 
+== Why GPU Aggregation?
 
-== Existing lab resources
+Some Large Language Models (LLMs), such as Llama-3-70B and Falcon 180B, can be too large to fit into the memory of a single GPU (vRAM). Or in some cases, GPUs that would be large-enough might be difficult to obtain. If you find yourself in such a situation, it is natural to wonder whether an aggregation of multiple, smaller GPUs can be used instead of one single large GPU.
 
-== Potential Topics to Cover in the Lab
+Thankfully, the answer is essentially Yes. To address these challenges, we can use more advanced configurations to distribute the LLM workload across several GPUs. One option is leveraging tensor parallelism, where the LLM is split across several GPUs, with each GPU processing a portion of the model's tensors. This approach ensures efficient utilization of available resources (GPUs) across one or several workers.
 
-=== GPU Aggregation Overview
+Some Serving Runtimes, such as vLLM, support tensor parallelism, allowing for both single-worker and multi-worker configurations (the difference whether your GPUs are all in the same machine, or are spread across machines).
 
-=== Multi-GPU Strategies
+== Components of GPU Aggregation
 
-=== Performance Optimization 
+GPU Aggregation is a complex topic and there are many components to consider. Fundementally there are four core concepts to consider: 
+
+* Tensor Parallelism
+* Pipeline Parallelism
+* Data Parallelism
+* Expert Parallelism
+
+
+
+
+
