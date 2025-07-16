@@ -1,4 +1,4 @@
-Model as a Service (MaaS) Security Checklist
+== Model as a Service (MaaS) Security Checklist
 
 1. Model Security
 
@@ -25,7 +25,7 @@ Model as a Service (MaaS) Security Checklist
 
 4. Runtime & Infrastructure Security
 
- * Run models in isolated environments (containers with seccomp/AppArmor)
+ * Run models in isolated environments (containers with selinux/seccomp/AppArmor)
  * Use confidential containers or confidential computing (e.g., Intel SGX, AMD SEV)
  * Monitor containers with runtime security tools (ACS - Advanced Cluster Security)
  * Regularly patch and update base images and OS

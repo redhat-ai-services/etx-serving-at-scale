@@ -1,10 +1,5 @@
 = MIG (Multi-Instance GPU): First-Time User Guide
 
-[IMPORTANT]
-====
-This guide takes you from zero knowledge to confidently using MIG in production environments. Whether you're a system administrator, developer, or AI practitioner, this comprehensive tutorial will help you understand and implement MIG effectively.
-====
-
 == What is MIG and Why Should You Care?
 
 === The Challenge: GPU Underutilization
@@ -30,6 +25,8 @@ MIG allows you to partition a single physical GPU into up to 7 smaller, isolated
 * **Quality of Service (QoS)**: Predictable performance for each workload
 
 Think of MIG as creating apartment units in a building - each tenant gets their own space with guaranteed resources, but they share the building's infrastructure efficiently.
+
+image::gpu-mig-overview.jpg[MIG Overview, 600]
 
 === Real-World Benefits
 
@@ -80,6 +77,8 @@ Physical A100-40GB GPU:
 ├── 7 SM Slices (98 SMs total)
 └── Various engines (NVDECs, encoders, etc.)
 ----
+
+image::mig-example.png[MIG partitioning, 600]
 
 ==== Creating GPU Instances
 

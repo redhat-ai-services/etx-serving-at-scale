@@ -1,15 +1,20 @@
 = Model as a Service (MaaS)
 
-High Level Architecture of MaaS to move to capability focus instead of product focus
+Logical Architecture of MaaS to move to capability focus instead of product focus
 
-image::MaaS.png[]
+.Model as a Service
+image::MaaS-Id.png[]
 
-== Workflow for our specific reference architecture
+== Overview
 
  * Keycloak – Identity provider (IdP) for OAuth2/OIDC authentication.
  * 3scale API Management – Secures and manages the API (model endpoint).
  * OpenShift AI (RHOAI) – Hosts your deployed AI model (via ModelMesh or custom service).
  * User/Client – Requests a token from Keycloak, then calls the model via 3scale using that token.
+
+The MaaS solution stack consists of Red Hat OpenShift AI, API Gateway and SSO. 
+It delivers end-to-end AI governance (3scale), zero-trust access (Keycloak), Inference server (vLLM) and hybrid flexibility (OpenShift AI) on a single platform. 
+It uses consistent tooling to deploy the solution on-prem and cloud with OpenShift.
 
 [source,text]
 ----
@@ -38,6 +43,10 @@ image::MaaS.png[]
 
 Name it (e.g., ai-realm).
 
+To find the admin user password it is in a secret, ie credential-keycloak-maas, so credential-(keycloakname)
+Created realm as maas-keycloakrealm
+
+
  * Create a Client (for your API consumer app):
 
 Client ID: ai-client
@@ -45,6 +54,7 @@ Access Type: confidential
 Valid Redirect URIs: * (for testing) or your app URL
 Enable Standard Flow and Client Credentials
 Save the Client Secret
+
 
  * Create Users/Roles (optional):
 
