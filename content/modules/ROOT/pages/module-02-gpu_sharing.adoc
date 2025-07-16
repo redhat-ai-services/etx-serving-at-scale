@@ -11,7 +11,6 @@ GPU sharing is a technique that allows multiple workloads to share a GPU. This i
 .GPU Partitioning Strategies
 image::../assets/images/gpu-sharing-overview.png[GPU Sharing Overview, 600]
 
-
 == Pros and Cons of GPU Sharing Methods
 
 |===
