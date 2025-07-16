@@ -26,7 +26,7 @@ Mutli-node vLLM deploys multiple vLLM containers that communicate with each othe
 
 Each worker can also access multiple GPUs available to that node using `--tensor-parallel-size`.
 
-image::03-multi-node-multi-gpu.png[Multi Node Multi-GPU, 600]
+image::03-multi-node-multi-gpu.png[Multi Node Multi-GPU]
 
 === Limitations of Multi-Node vLLM
 
