@@ -57,7 +57,7 @@ The name of the model server must be `vllm` in order for some of the configurati
 ====
 
 +
-image::03-deploy-model-configs.png[Model Options]
+image::03-deploy-model-single-gpu.png[Model Options]
 change me
 . In the `Source model location` section, choose the option to `Create connection`.  Enter the following information:
 
@@ -83,6 +83,7 @@ ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request wit
 
 At this point, we need to add a second GPU to the pod to have access to more memory. From the ```Models``` tab, click on the three-dots menu on the right and then edit:
 
+image::03-edit-model-config.png[Edit configuration]
 
 Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
 [source,bash]
