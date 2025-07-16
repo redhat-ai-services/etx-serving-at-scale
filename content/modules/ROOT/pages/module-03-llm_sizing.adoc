@@ -1,0 +1,11 @@
+= LLM GPU Requirements
+
+When selecting hardware to run an LLM, several factors need to be considered including the model size, the KV Cache requirements for the use case, the use case concurrency requirements, the format of the model's data types, and any performance requirements such as Time to First Token (TTFT) or throughput.
+
+== Estimating Model Size
+
+One of the first calculations needed to help understand if a model will run on a particular GPU is creating an estimate of the model size.
+
+Most models 
+
+stem:((P*4)/(32/Q))*1.2
