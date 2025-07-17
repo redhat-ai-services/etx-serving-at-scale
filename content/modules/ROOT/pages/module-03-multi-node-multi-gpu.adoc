@@ -4,7 +4,7 @@ We have successfully deployed vLLM on a single node with multiple GPUs, the natu
 
 In order to do that, we'll need to process and deploy a template from the ```redhat-ods-applications``` project:
 ```
-oc process vllm-multinode-runtime-template -n redhat-ods-applications|oc apply -n kserve-demo -f -
+oc process vllm-multinode-runtime-template -n redhat-ods-applications|oc apply -n vllm -f -
 ```
 
 Official doc page: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.19/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
