@@ -9,6 +9,13 @@ oc process vllm-multinode-runtime-template -n redhat-ods-applications|oc apply -
 
 Official doc page: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.19/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
 
+In order for this architecture to work, we need the model to be stored in a RWX PVC, which we already prepared for your convenience in the project:
+```
+oc get pvc llama-model 
+NAME          STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
+llama-model   Bound    pvc-3d02084b-66d8-4e49-9eac-1bf9ab4f05ed   60Gi       RWX            ocs-storagecluster-cephfs   <unset>                 25h
+```
+
 WARNING: they're gonna run into issues, here's the working ServingRuntime object:
 [source,yaml]
 apiVersion: serving.kserve.io/v1alpha1
