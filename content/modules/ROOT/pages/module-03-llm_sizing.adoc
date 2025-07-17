@@ -36,7 +36,7 @@ image::03-model-sizing-formula.png[Model Sizing Formula]
 
 For example, for https://huggingface.co/ibm-granite/granite-3.3-8b-instruct/tree/main[Granite 3.3 8B Instruct] is 8 billion parameters and is an fp16 model.  
 
-(((8*(10^9)*4)/(32/16))*1.2)/1024^3 = 17.9 Gb
+(((8 * 10^9 * 4) / ( 32 / 16 )) * 1.2) / 1024^3 = 17.9 Gb
 
 For some additional details on this calculation, you can read more about it https://training.continuumlabs.ai/infrastructure/data-and-memory/calculating-gpu-memory-for-serving-llms[here].
 
