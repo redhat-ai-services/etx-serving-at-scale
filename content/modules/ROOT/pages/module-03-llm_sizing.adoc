@@ -40,6 +40,10 @@ For example, for https://huggingface.co/ibm-granite/granite-3.3-8b-instruct/tree
 
 For some additional details on this calculation, you can read more about it https://training.continuumlabs.ai/infrastructure/data-and-memory/calculating-gpu-memory-for-serving-llms[here].
 
+=== Quantization
+
+Some LLMs will use quantization to make them smaller and more performant.  Most models will default to an fp16 data type which uses 16 bits, but fp8 is a common quantization option that use 8 bit data types.  Int4 is another common data type that is gaining popularity which uses only 4 bits.  Additionally, some advanced techniques can be uses such as the w4a16 which primarily use an int4 data type but also leverage some additional bits to increase the performance compared to traditional int4 models.
+
 == Estimating KV Cache
 
 Beyond the model itself, vLLM also requires vRAM for the KV Cache.  The KV Cache requires a specific amount of vRAM per token that can be different from model to model.  An estimate for the vRAM per token can be calculated based on the architecture of the model with details from the config.json file on HuggingFace.
@@ -52,7 +56,9 @@ Granite 3.3 8B Instruct requires 0.15625 Mb per token and the models max context
 
 Along side our model requirements of about 17.9 Gb, that means we need about 38 Gb to run the model and support the max context length.
 
-CHALLENGE: If we had an A10G or an L4 GPU with 24 Gb of vRAM, estimate how many tokens you could configure the KV Cache that would still fit on that device with Granite 3.3 8B Instruct.
+=== Exercise: KV Cache Estimation
+
+If we had an A10G or an L4 GPU with 24 Gb of vRAM, estimate how many tokens you could configure the KV Cache that would still fit on that device with Granite 3.3 8B Instruct.
 
 == Sizing Spreadsheet
 
@@ -70,4 +76,6 @@ In addition to the model sizing, the "Subs & Cost Modeling" tab will help to rec
 
 Please keep in mind that all costs are subject to change and the cost is simply an estimate and should not be used in a quote to a customer.
 
-CHALLENGE: Make a copy of the spreadsheet and perform a sizing for an un-quantized model and a RedHatAI quantized version of the same model.
+=== Exercise: Model Sizing Quantization Comparison
+
+Make a copy of the spreadsheet and perform a sizing for an un-quantized model and a RedHatAI quantized version of the same model.
