@@ -15,10 +15,10 @@ Treating the model as an OCI artifact allows us to easily promote the model betw
 
 == Creating the vLLM Instance
 
-. Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}[OpenShift AI Dashboard] and select the `composer-ai-apps` project from the list of Data Science Projects
+. Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}[OpenShift AI Dashboard] and select the `vllm` project from the list of Data Science Projects
 
 +
-image::03-datascience-project.png[Composer AI Apps Project]
+image::03-datascience-project.png[vLLM Project]
 
 . Select the `Models` tab and click `Select single-model`
 
@@ -35,7 +35,7 @@ image::03-deploy-model.png[Deploy Models]
 +
 [source,yaml]
 ----
-Model deployment name: vllm
+Model deployment name: granite-8b
 Serving runtime: vLLM NVIDIA GPU ServingRuntime for KServe
 Deployment mode: Advanced
 Number of model server replicas to deploy: 1
@@ -49,12 +49,6 @@ Number of accelerators: 1
 Make deployed models available through an external route: Checked
 Require token authentication: Unchecked
 ----
-
-+
-[Important]
-====
-The name of the model server must be `vllm` in order for some of the configurations in Composer AI to match up correctly.
-====
 
 +
 image::03-deploy-model-single-gpu.png[Model Options]
@@ -71,40 +65,6 @@ URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 
 image::03-deploy-model-data-connection.png[URI Connection]
 
-After creating the model serving instance, a ```vllm-predictor-00001-deployment-*``` pod will be spawned on the cluster in the ```vllm``` project:
-[source]
-oc get pods -n vllm
-NAME                                              READY   STATUS            RESTARTS   AGE
-vllm-predictor-00001-deployment-5cd766d5f-t52qm   0/4     PodInitializing   0          43s
-
-If we go ahead and see the logs for the pod, it will eventually fail:
-[source]
-ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request with the models's max seq len (131072), (20.00 GiB KV cache is needed, which is larger than the available KV cache memory (3.84 GiB). Based on the available memory,  Try increasing `gpu_memory_utilization` or decreasing `max_model_len` when initializing the engine.
-
-At this point, we need to add a second GPU to the pod to have access to more memory. From the ```Models``` tab, click on the three-dots menu on the right and then edit:
-
-image::03-edit-model-config.png[Edit configuration]
-
-Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
-[source,bash]
---tensor-parallel-size=2
-
-image::03-deploy-model-parameters.png[Runtime Arguments]
-
-This will create an updated deployment called ```vllm-predictor-00002-deployment-*```: 
-```
-oc get pods -n vllm
-NAME                                               READY   STATUS    RESTARTS   AGE
-vllm-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
-
-oc logs -n vllm -f vllm-predictor-00002-deployment-6f7cdc67bd-8lhkn 
-INFO 07-16 07:53:42 [__init__.py:239] Automatically detected platform cuda.
-INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
-[...]
-INFO:     Started server process [4]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-```
 [NOTE]
 ====
 You can find the image container our model https://github.com/redhat-ai-services/modelcar-catalog/[here] alongside other ModelCar images that you can try.
@@ -114,7 +74,6 @@ Additionally, the source for building these ModelCar images can be found on http
 For more information on ModelCar see the KServe https://kserve.github.io/website/latest/modelserving/storage/oci/[Serving models with OCI images] documentation.
 ====
 
-+
 [TIP]
 ====
 A copy of the image has already been pulled onto the GPU node to help speed up deploying the model, but deploying LLMs can take quite some time.
@@ -136,18 +95,103 @@ spec:
 ----
 ====
 
-. A new vLLM instance will be created in the OpenShift AI Dashboard.  Return to the https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/composer-ai-apps/core%7Ev1%7EPod?name=vllm-predictor[OpenShift Web Console] and check the pods in the `composer-ai-apps` project.  You should find a pod called `vllm-predictor-00001-deployment-*`.  Check the pods `Events` and `Logs` to follow the progress for the pod until it becomes ready.
+After creating the model serving instance, a ```granite-8b-predictor-00001-deployment-*``` pod will be spawned on the cluster in the ```vllm``` project:
+[source]
+oc get pods -n vllm
+NAME                                              READY   STATUS            RESTARTS   AGE
+granite-8b-predictor-00001-deployment-5cd766d5f-t52qm   0/4     PodInitializing   0          43s
+
+If we go ahead and see the logs for the pod, it will eventually fail:
+[source,options="wrap"]
+ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request with the models's max seq len (131072), (20.00 GiB KV cache is needed, which is larger than the available KV cache memory (3.84 GiB). Based on the available memory,  Try increasing `gpu_memory_utilization` or decreasing `max_model_len` when initializing the engine.
+
+vLLM is failing to start because it does not have enough vRAM to support the sizing of the default KV Cache. At this point, we can limit the size of the KV Cache, or we can add additional GPU resources to the instance to increase the available vRAM. From the ```Models``` tab, click on the three-dots menu on the right and then edit:
+
+image::03-edit-model-config.png[Edit configuration]
+
+Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
+[source,bash]
+--tensor-parallel-size=2
+
+image::03-deploy-model-parameters.png[Runtime Arguments]
+
+This will create an updated deployment called ```granite-8b-predictor-00002-deployment-*```: 
+```
+oc get pods -n vllm
+NAME                                               READY   STATUS    RESTARTS   AGE
+granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
+
+oc logs -n vllm -f granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn 
+INFO 07-16 07:53:42 [__init__.py:239] Automatically detected platform cuda.
+INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
+[...]
+INFO:     Started server process [4]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+. A new vLLM instance will be created in the OpenShift AI Dashboard.  Return to the https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/vllm/core%7Ev1%7EPod?name=granite-8b-predictor[OpenShift Web Console] and check the pods in the `vllm` project.  You should find a pod called `granite-8b-predictor-00001-deployment-*`.  Check the pods `Events` and `Logs` to follow the progress for the pod until it becomes ready.
 
 . (Optional) The OpenShift AI Dashboard created two KServe objects, a `ServingRuntime` and an `InferenceService`.  From the OpenShift Web Console, navigate to the `Home` > `Search` page and use the `Resources` drop down menu to search for and select those objects.  Spend a few minutes reviewing the objects created by the Dashboard.
 
 +
 image::02-kserve-objects.png[KServe Objects]
 
+== Checking our GPU usage
+
+We can rsh into the pod and see the GPUs that have been made available to the pod with the `nvidia-smi` command.
+
+To rsh into the pod, start out by getting the pod name:
+
+```
+oc get pods -n vllm
+NAME                                               READY   STATUS    RESTARTS   AGE
+granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          17s
+```
+
+Then use the pod name to rsh into the pod:
+
+```
+oc -n vllm rsh granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn
+sh-5.1$
+```
+
+Finally, run the `nvidia-smi` command to view the available GPUs and the vRAM utilization.
+
+```
+nvidia-smi
+Thu Jul 17 12:56:28 2025
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.148.08             Driver Version: 570.148.08     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      On  |   00000000:38:00.0 Off |                    0 |
+| N/A   62C    P0             38W /   72W |   21582MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA L4                      On  |   00000000:3E:00.0 Off |                    0 |
+| N/A   58C    P0             35W /   72W |   21582MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             255      C   python                                21574MiB |
+|    1   N/A  N/A             267      C   python                                21574MiB |
++-----------------------------------------------------------------------------------------+
+```
+
 == Testing vLLM Endpoints
 
-=== Accessing the Swgger Docs
+=== Accessing the Swagger Docs
 
-To start will test our vLLM endpoint to make sure it is responding by accessing the Swagger docs for vLLM.
+To test our vLLM endpoint to make sure it is responding, we will start by accessing the Swagger docs for vLLM.
 
 . To start we will need to find the endpoint URL for the served model.  From the OpenShift AI Dashboard, navigate to the Models tab and click on the `Internal and external endpoint details` to find the URL.
 
@@ -157,12 +201,12 @@ image::03-deploy-model-route.png[Model endpoint]
 +
 [NOTE]
 ====
-Our vLLM instance does not create a normal OpenShift route so you won't find it under the normal `Networking` > `Routes` menu.  
+Our vLLM instance does not create a normal OpenShift route since we are deploying with Serverless mode so you won't find it under the normal `Networking` > `Routes` menu.  
 
 Instead it creates a KNative Serving Route object which can be found in `Serverless` > `Serving` or with the following:
 
 ----
-oc get routes.serving.knative.dev -n composer-ai-apps
+oc get routes.serving.knative.dev -n vllm
 ----
 ====
 
@@ -170,27 +214,31 @@ oc get routes.serving.knative.dev -n composer-ai-apps
 
 . Use the `Try it out` option of the `GET /v1/models` endpoint to list the models being deployed by this server.  Note that the id for our model matches the name of the model server we created in the OpenShift AI Dashboard.
 
++
 [WARNING]
 ====
 Running into a 404 error on the OCP web console after trying this?  Let us know to help identify a bug.
 
-Possible fixes include switching wifi networks, switching to Incognito mode, or deleting cookies and cache.
+To get around this, try accessing the OCP web console through an Incognito window or a different browser.
 ====
 
-=== Testing the model from Composer AI UI
+. Once you have the model name, find the `POST /v1/chat/completions` endpoint and use the `Try it out` and use the following as the Request body.
 
-Now that we have done some basic testing we are ready to try the model from inside of the Composer AI Studio UI.
 
-Our Composer instance is already setup to point to the vLLM endpoint we created so no additional configuration is required.
+```
+{
+  "model": "granite-8b",
+  "messages":[ 
+    { 
+      "role": "system",
+      "content": "You're an helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Who is Michael Jordan?"
+    }
+  ]
+}
+```
 
-. Find the `chatbot-ui` Route from the OpenShift Web Console and open it as a new tab.
-
-+
-image::02-chatbot-route.png[Chatbot Route]
-
-. Click on the Assistants on the left hand side, and choose the option to `Create Assistant`.  Enter the name "Default Assistant", select the default LLM, and click `Create` without editing any of the fields.
-
-. Ask a question in the UI to verify that the LLM is able to respond.
-
-+
-image::02-llm-response.png[LLM Response]
+You should receive a response with an answer to the question.
