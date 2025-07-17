@@ -1,0 +1,47 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: vllm-multi-node-llama
+    serving.kserve.io/autoscalerClass: external
+    serving.kserve.io/deploymentMode: RawDeployment
+  finalizers:
+  - odh.inferenceservice.finalizers
+  - inferenceservice.finalizers
+  labels:
+    networking.kserve.io/visibility: exposed
+    opendatahub.io/dashboard: "true"
+  name: vllm-multi-node-llama
+  namespace: vllm
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      args:
+      - --max-model-len=100000
+      modelFormat:
+        name: vLLM
+      name: ""
+      resources:
+        limits:
+          cpu: "16"
+          memory: 48Gi
+          nvidia.com/gpu: "2"
+        requests:
+          cpu: "8"
+          memory: 24Gi
+          nvidia.com/gpu: "2"
+      runtime: vllm-multinode-runtime
+      storageUri: pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+    workerSpec:
+      tensorParallelSize: 2
+      pipelineParallelSize: 2
+      tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Exists

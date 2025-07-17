@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: download-model-llama
+  namespace: vllm
+spec:
+  selector: {}
+  template:
+    spec:
+      serviceAccountName: model-puller
+      containers:
+      - name: git-cloner
+        image: quay.io/redhat-ai-services/huggingface-modelcar-builder:latest
+        env:
+        - name: MODEL_REPO
+          value: RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16
+        - name: HF_TOKEN
+          value: <YOUR_HF_TOKEN>
+        command:
+        - python3
+        args:
+        - /download_model.py 
+        - --model-repo 
+        - $(MODEL_REPO)
+        - -t 
+        - /mnt/Llama-3.3-70B-Instruct-quantized.w4a16
+        securityContext:
+          runAsUser: 0
+          fsGroup: 0
+        volumeMounts:
+        - mountPath: /mnt
+          name: src
+      volumes:
+      - name: src
+        persistentVolumeClaim:
+          claimName: llama-model
+      restartPolicy: Never
