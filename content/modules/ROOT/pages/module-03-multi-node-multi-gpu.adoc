@@ -18,6 +18,7 @@ llama-model   Bound    pvc-3d02084b-66d8-4e49-9eac-1bf9ab4f05ed   60Gi       RWX
 
 WARNING: they're gonna run into issues, here's the working ServingRuntime object:
 [source,yaml]
+---
 apiVersion: serving.kserve.io/v1alpha1
 kind: ServingRuntime
 metadata:
