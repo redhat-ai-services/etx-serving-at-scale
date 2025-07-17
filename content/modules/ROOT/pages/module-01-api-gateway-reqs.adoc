@@ -13,6 +13,8 @@ Processing of SSE events for supporting streaming responses
                 continuous_usage_stats  ==> Include usage on each chunk
     }
 
+https://github.com/rh-aiservices-bu/models-aas/blob/main/deployment/3scale/llm_metrics_policy/llm.lua#L143
+
 ```
 
 * User ID headers to need to be added to requests   
