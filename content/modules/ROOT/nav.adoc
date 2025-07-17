@@ -1,9 +1,4 @@
-* xref:module-01.adoc[1. Model as a Service (Maas)]
-** xref:module-01-api-gateway-reqs.adoc[API Gateway Capabilities and Requirements]
-** xref:module-01-iam-reqs.adoc[IAM Capabilities and Requirements]
-** xref:module-01-maas-security.adoc[Security Considerations]
-
-* xref:module-02.adoc[2. Distributed Serving]
+* xref:module-02.adoc[Advanced GPU Configuration]
 ** xref:module-02-gpu_sharing.adoc[GPU Sharing]
 *** xref:module-02-timeslicing.adoc[Timeslicing]
 *** xref:module-02-mig.adoc[MIG]
@@ -14,7 +9,7 @@
 *** xref:module-02-data_parallelism.adoc[Data Parallelism] 
 *** xref:module-02-expert_parallelism.adoc[Expert Parallelism] 
 
-* xref:module-03.adoc[3. Advanced Serving]
+* xref:module-03.adoc[Model Serving with vLLM]
 ** xref:module-03-rhaiis_rhoai.adoc[RHAIIS vs RHOAI Capabilities]
 ** xref:module-03-multi_node_single_node.adoc[Multi-node vs multi-GPU overview]
 ** xref:module-03-llm_sizing.adoc[LLM GPU Requirements]
@@ -24,3 +19,8 @@
 ** xref:module-03.adoc#accelerated_networking[Accelerated Networking Considerations]
 ** xref:module-03.adoc#observability[Observability]
 ** xref:module-03.adoc#workload_examples[Workload Examples]
+
+* xref:module-01.adoc[Model as a Service (Maas)]
+** xref:module-01-api-gateway-reqs.adoc[API Gateway Capabilities and Requirements]
+** xref:module-01-iam-reqs.adoc[IAM Capabilities and Requirements]
+** xref:module-01-maas-security.adoc[Security Considerations]
