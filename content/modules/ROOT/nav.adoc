@@ -20,6 +20,7 @@
 ** xref:module-03-llm_sizing.adoc[LLM GPU Requirements]
 ** xref:module-03-single-node-multi-gpu.adoc[Multi-GPU Lab]
 ** xref:module-03.adoc#multi_node_lab[Multi-Node Lab]
+** xref:module-03-vllm-configuration.adoc[Advanced vLLM Configuration]
 ** xref:module-03.adoc#accelerated_networking[Accelerated Networking Considerations]
 ** xref:module-03.adoc#observability[Observability]
 ** xref:module-03.adoc#workload_examples[Workload Examples]
