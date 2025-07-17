@@ -310,3 +310,50 @@ spec:
 
 
 After that, we'll have our two pods starting a ray cluster, and once they both join the cluster vLLM will start and the model will be served
+
+```
+vllm-multi-node-llama-predictor-5484cb9cfc-lgzd9 - head
+
+2025-07-16 13:47:37,113	INFO usage_lib.py:441 -- Usage stats collection is disabled.
+2025-07-16 13:47:37,114	INFO scripts.py:971 -- Local node IP: 10.130.2.44
+2025-07-16 13:47:39,012	SUCC scripts.py:1007 -- --------------------
+2025-07-16 13:47:39,012	SUCC scripts.py:1008 -- Ray runtime started.
+2025-07-16 13:47:39,012	SUCC scripts.py:1009 -- --------------------
+2025-07-16 13:47:39,012	INFO scripts.py:1011 -- Next steps
+2025-07-16 13:47:39,012	INFO scripts.py:1014 -- To add another node to this Ray cluster, run
+2025-07-16 13:47:39,012	INFO scripts.py:1017 --   ray start --address='10.130.2.44:6379'
+2025-07-16 13:47:39,012	INFO scripts.py:1026 -- To connect to this Ray cluster:
+2025-07-16 13:47:39,012	INFO scripts.py:1028 -- import ray
+2025-07-16 13:47:39,012	INFO scripts.py:1029 -- ray.init()
+2025-07-16 13:47:39,012	INFO scripts.py:1060 -- To terminate the Ray runtime, run
+2025-07-16 13:47:39,012	INFO scripts.py:1061 --   ray stop
+2025-07-16 13:47:39,012	INFO scripts.py:1064 -- To view the status of the cluster, use
+2025-07-16 13:47:39,012	INFO scripts.py:1065 --   ray status
+Waiting...
+======== Autoscaler status: 2025-07-16 13:47:43.159225 ========
+Node status
+---------------------------------------------------------------
+Active:
+ 1 node_47c67b04c64a3da5738a91410e3ed893c7c0792104a52da130564287
+ 1 node_f266b870619c7f307db957e9c57d74934e5f7a2a4fe9b381b9357e68
+
+[...]
+
+INFO 07-16 13:47:56 [__init__.py:239] Automatically detected platform cuda.
+INFO 07-16 13:47:58 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
+
+
+vllm-multi-node-llama-predictor-worker-8b97c66f9-7m29v
+
+Global Control Service(GCS) is ready.
+Attempting to connect to Ray cluster at vllm-multi-node-llama-head-1.vllm.svc.cluster.local:6379 ...
+2025-07-16 13:47:40,785	INFO scripts.py:1152 -- Local node IP: 10.131.2.61
+2025-07-16 13:47:40,957	SUCC scripts.py:1168 -- --------------------
+2025-07-16 13:47:40,957	SUCC scripts.py:1169 -- Ray runtime started.
+2025-07-16 13:47:40,957	SUCC scripts.py:1170 -- --------------------
+2025-07-16 13:47:40,957	INFO scripts.py:1172 -- To terminate the Ray runtime, run
+2025-07-16 13:47:40,957	INFO scripts.py:1173 --   ray stop
+2025-07-16 13:47:40,958	INFO scripts.py:1181 -- --block
+2025-07-16 13:47:40,958	INFO scripts.py:1182 -- This command will now block forever until terminated by a signal.
+2025-07-16 13:47:40,958	INFO scripts.py:1185 -- Running subprocesses are monitored and a message will be printed if any of them terminate unexpectedly. Subprocesses exit with SIGTERM will be treated as graceful, thus NOT reported.
+```
