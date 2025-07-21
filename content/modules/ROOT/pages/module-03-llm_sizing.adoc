@@ -80,4 +80,4 @@ Please keep in mind that all costs are subject to change and the cost is simply 
 
 === Exercise: Model Sizing Quantization Comparison
 
-Make a copy of the spreadsheet and perform a sizing for an un-quantized model and a RedHatAI quantized version of the same model.
+Make a copy of the spreadsheet and perform a sizing for an un-quantized model and a RedHatAI quantized version of the same model, such as Llama 70B.  
