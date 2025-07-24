@@ -1,3 +1,4 @@
+#https://access.redhat.com/solutions/6047841
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
