@@ -212,7 +212,11 @@ oc get routes.serving.knative.dev -n vllm
 
 . Use the `copy` option for the route found in the previous step and paste it into a new tab with `/docs` at the end to access a FastAPI Swagger Docs page for vLLM.
 
+image::03-model-docs-page.png[Docs page]
+
 . Use the `Try it out` option of the `GET /v1/models` endpoint to list the models being deployed by this server.  Note that the id for our model matches the name of the model server we created in the OpenShift AI Dashboard.
+
+image::03-llm-docs-run-v1-models.png[V1 Modules]
 
 +
 [WARNING]
@@ -242,3 +246,5 @@ To get around this, try accessing the OCP web console through an Incognito windo
 ```
 
 You should receive a response with an answer to the question.
+
+image::03-llm-docs-strawberry.png[Strawberries]
