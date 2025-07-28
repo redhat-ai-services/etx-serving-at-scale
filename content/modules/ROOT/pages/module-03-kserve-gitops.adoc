@@ -1,1 +1,67 @@
 = GitOps with KServe
+
+
+
+Up to this point, we have been primarily using the OpenShift AI Dashboard to deploy our models.  While this is a great way to get started, it does not allow us to utilize the full capabilities of KServe, or manage our models using standard GitOps practices that may be required for a production environment.
+
+TIP: For a deeper dive on more GitOps capabilities with OpenShift AI, see the https://ai-on-openshift.io/odh-rhoai/gitops/#model-serving[AI on OpenShift GitOps] page.
+
+== KServe Objects
+
+KServe uses two primary objects to manage model serving:
+
+* InferenceService
+* ServingRuntime
+
+The InferenceService object is used to define the model and any model specific configurations to serve that model, and the ServingRuntime object is used to define the runtime environment for the model.
+
+OpenShift AI generally assumes a one to one relationship between an InferenceService and a ServingRuntime, but a ServingRuntime can be configured to be used by multiple InferenceServices.
+
+== vLLM KServe Helm Chart
+
+To help manage the deployment of vLLM, a Helm chart is available from Red Hat Services that can be used to help deploy a vLLM instance using KServe:
+
+https://github.com/redhat-ai-services/helm-charts/tree/main/charts/vllm-kserve
+
+The chart can be used to deploy an instance using vLLM and exposes many features that are not available when using the OpenShift AI Dashboard.
+
+NOTE: The vLLM KServe Helm chart is not currently supported for multi-node deployments.
+
+== Lab: Deploy Additional Models with Helm
+
+In this lab, we will deploy the final LLM we need for the later Llama-stack labs.  This time, we will use the Helm chart from above to deploy the model.
+
+NOTE: If you don't already have Helm installed, please refer to the official documentation: https://helm.sh/docs/intro/install/
+
+. To begin, we will add the Red Hat AI Services Helm repository to our Helm client and pull the latest charts:
+
+```
+helm repo add redhat-ai-services https://redhat-ai-services.github.io/helm-charts/
+helm repo update redhat-ai-services
+```
+
+. Next, we will update our Helm client to pull the latest charts from the repository:
+
+```
+helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.4.2 \
+  --set fullnameOverride="granite-guardian" \
+  --set image.tag="rhoai-2.19-cuda" \
+  --set model.uri="quay.io/redhat-ai-services/modelcar-catalog:granite-guardian-3.2-5b" \
+  --set model.args={"--max-model-len=20000"} \
+  --set deploymentMode=RawDeployment \
+  --set scaling.rawDeployment.deploymentStrategy.type=Recreate
+```
+
+`fullnameOverride` is used to override the default name of the deployment.  Helm charts usually default to using a combination of the release name and the chart name to create the name of the deployment.  In this case, we are using the release name `granite-guardian` and ignoring we want to skip including the chart name in the deployment.
+
+`image.tag` is used to define the tag of the vLLM image to use.  This is an optional setting, but can help to ensure that we are using the same version of vLLM that is being used when we deploy using the OpenShift AI Dashboard.
+
+`model.uri` is used to define the model to be served from an existing OCI container.
+
+`model.args` is used to define any model specific arguments to be passed to the model.  In this case, we are setting the `--max-model-len` to 20000 to limit the context length of the model in order to allow it to fit our our GPU.
+
+`deploymentMode` is used to define the deployment mode we want KServe to use.  Setting this option to `RawDeployment` allows us to deploy the model without the ServiceMesh/Serverless.
+
+`scaling.rawDeployment.deploymentStrategy.type` will allow us to set the deployment strategy to `Recreate` which will allow us to make updates to the model in the future by first deleting the existing deployment and then creating a new one.  This option is generally not recommended for production environments as it can cause downtime for the model, but it is useful for us since we have a limited number of GPUs and we don't need to worry about downtime.
+
+. To verify that the deployment was successful, check that the pod successfully started and is in the ready state.
