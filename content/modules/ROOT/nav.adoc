@@ -21,6 +21,7 @@
 ** xref:module-03-observability.adoc[Observability]
 
 * xref:module-01.adoc[Model as a Service (Maas)]
+** xref:module-01-logical-arch.adoc[MAAS Logical Architecture]
 ** xref:module-01-api-gateway-reqs.adoc[API Gateway Capabilities and Requirements]
 ** xref:module-01-iam-reqs.adoc[IAM Capabilities and Requirements]
 ** xref:module-01-maas-security.adoc[Security Considerations]

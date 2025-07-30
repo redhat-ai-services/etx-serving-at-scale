@@ -1,9 +1,69 @@
 = Model as a Service (MaaS)
 
+
+== What is it
+A solution providing AI models as the *Service* to a larger audience
+
+* IT serves common models centrally or remotely
+** Generative AI focus but applicable to any model
+** Centralized pool of hardware 
+** Platform Engineering for AI
+** AI management (versioning, regression testing, etc)
+* Models available through API Gateway
+* Developers consume models, build AI applications
+** For end users (private assistants, etc) 
+** To improve products or services through AI 
+* Shared Resources keeps costs down
+
+
+.What is it
+image::MAAS-Arch-drawio.png[MaaS]
+
+
+== Why do Customers need it
+Self-Service is good for small teams with plentiful resources
+
+Throwing GPUs at the problem is wateful
+
+* Few people know how to use them correctly and effectively
+* Leads to duplication and underutilization of hardware
+* Leads to high costs
+
+*Most people want an Model serving endpoint, not a GPU*
+
+
+.Why do customers need it
+[.bordered]
+image::MAAS-sales-slide.png[MaaS]
+
+== What do we currently have
+.In House solution
+image::MAAS-BUHosted.png[]
+
+Developed by the BU CAI team using RH Technology
+
+.Try it out
+[example]
+https://maas.apps.prod.rhoai.rh-aiservices-bu.com/
+
+
+.Solution architecture
+image::MAAS-3scale architecture.png[]
+
+Constraints:
+3Scale is going away
+Customer already have their own API gateways
+
+
+.How do we deliver it 
+
 Logical Architecture of MaaS to move to capability focus instead of product focus
 
 .Model as a Service
-image::MaaS-Id.png[MaaS]
+
+Logical Architecture of MaaS to move to capability focus instead of product focus
+
+image::MaaS-ld.png[MaaS]
 
 == Overview
 
