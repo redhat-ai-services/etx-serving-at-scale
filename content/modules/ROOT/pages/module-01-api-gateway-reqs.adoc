@@ -1,26 +1,53 @@
-== API Gateway Required Functionality
+= MAAS Required Functionality
+
+== API Gateway
 
 === SSE Handling
-Processing of SSE events for supporting streaming responses 
+
+vLLM and other model serving engines can send responses back to the caller as a stream of *Server Sent Events*.
+This requires the API gateway to support processing of SSE events for streaming response handling.
+
+[NOTE]
+.SSE Specification
+====
 <https://html.spec.whatwg.org/multipage/server-sent-events.html>
+====
+
 
 === Request Payload Transformation
-* Outgoing requests need to be modified to add vLLM token tracking 
+
+* User ID headers need to be added to requests   
+* Mandatory corporate custom HTTP headers
+* Outgoing requests need to be modified to add vLLM token tracking (vLLM only)
+The standard llm serving engine in RHOAI, *vLLM*, supports per-request/response token tracking. 
+This needs to be turned on in the _ stream options_ parameter send to vLLM.
 
 ```
     stream_options={
                 include_usage ==> Include usage on last response     
-                continuous_usage_stats  ==> Include usage on each chunk
+                continuous_usage_stats  ==> Include usage on each SSE chunk
     }
-
-https://github.com/rh-aiservices-bu/models-aas/blob/main/deployment/3scale/llm_metrics_policy/llm.lua#L143
 
 ```
 
-* User ID headers to need to be added to requests   
-* Mandatory corporate custom HTTP headers
+[NOTE]
+.3Scale Request Payload transformation code
+====
+<https://github.com/rh-aiservices-bu/models-aas/blob/main/deployment/3scale/llm_metrics_policy/llm.lua#L143>
+====
 
-=== Gathering metrics 
+=== Response Payload Parsing
+
+The responses sent back from _vLLM_ will contain custom fields containing the token counts. These fields need to be parsed to retrieve the token counts and forward these metrics to the customer metrics handling solution e.g. *prometheus* running on OpenShift. 
+
+[NOTE]
+.3Scale Response payload metrics extraction code
+====
+<https://github.com/rh-aiservices-bu/models-aas/blob/91c09bd88da9087c87f6be3704431320b50a19ee/deployment/3scale/llm_metrics_policy/llm.lua#L221>
+====
+
+
+=== Useful metrics to collect & report
 ** Request/Response count
 ** Request/Response Latency
 ** Token counts per request
@@ -28,31 +55,28 @@ https://github.com/rh-aiservices-bu/models-aas/blob/main/deployment/3scale/llm_m
 *** Token count for a completion
 *** Total token count
 
-
-=== Prometheus Integration
+[TIP]
+Prometheus Integration for other API gateways
+====
 ** Kong example <https://developer.konghq.com/plugins/prometheus/>
 ** APISix example <https://apisix.apache.org/docs/apisix/plugins/prometheus/> 
+====
 
-=== Validation
+=== API Gateway Optional Functionality
+
+* *Rate Limiting* - Prevent users from hammering LLMs
+
+* *Request Prioritization* - Ensuring prioritization for critical applications/users
+
+* *Cost Management* - Chargeback & Showback
+
+* *Corporate Guardrails* - Single point of entry for LLM requests
+
+== Security and validation
 ** OIDC validation
 ** Application/Developer Token validation
+** Integrating with corporate SSO
 
-=== User Management
-
-
-
-
-== API Gateway Optional Functionality
-
-=== Rate Limiting
-Prevent users from hammering LLMs
-
-=== Request Prioritization
-Ensuring prioritization for critical applications/users
-
-=== Cost Management
-
-=== Corporate Guardrails
-Single point of entry for LLM requests
-
-
+== User Management
+** Developer/User key generation and tracking
+** User onboarding & management
