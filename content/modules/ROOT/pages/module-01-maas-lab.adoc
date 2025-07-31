@@ -1,6 +1,8 @@
 = 3Scale API Gateway
 
-In this module, you will learn how to configure 3Scale API Gateway to give access to the models previously deployed.
+In this module, you will learn how to configure 3Scale API Gateway to give access to the models previously deployed in the first lab.
+
+
 
 [#3scale-overview]
 == 3Scale Overview
@@ -32,7 +34,7 @@ Now you can log into the 3Scale admin portal at https://maas-admin.{openshift_cl
 You will be prompted by a wizard window. Close it by clicking on the top right corner of the screen.
 
 [.bordershadow]
-image::03/03-3scale-close-wizard.png[]
+image::MAAS3ScaleStart.png[]
 
 === Enabling the Developer Portal
 
@@ -43,19 +45,28 @@ A user was already created for you in 3Scale in (Audience->Accounts->Listing), b
 * On the Audience section, got to Developer Portal->Settings->Domains & Access.
 +
 [.bordershadow]
-image::03/03-3scale-portal-menu.png[]
+image::MAASSetupDev.png[]
 
-* The Developer Portal Access Code is used to control the access the developer portal. You can use the default value in the next section to connect to it, or simply delete it and click on `Update Account`. This will remove the access code and allow anyone to access the developer portal, although they will still need to authenticate. This is what we will do in this workshop.
+* The Developer Portal Access Code is used to control the access the developer portal. Simply delete it and click on `Update Account`. to remove the access code and allow anyone to access the developer portal, although they will still need to authenticate. 
 +
-[.bordershadow]
-image::03/03-3scale-remove-access-code.png[]
 
 [#creating-a-new-product]
 == Creating a new Product in 3Scale
 
-Now that you have discovered the Admin and the Developer portals from 3Scale and tested the API access, you are ready to create a new Product based on the model you deployed in the previous module. To do that we are going to use the 3Scale operator. This will show you how you can fully automate the deployment of new models in your service.
+You are ready to create a new Product based on the model you deployed in the previous module. To do that we are going to use the 3Scale operator. This will show you how you can fully automate the deployment of new models in your service.
 
-To work with to the 3Scale operator, you can use the OpenShift Web Console or the OpenShift CLI. In this workshop, we will show you how to use the OpenShift Web Console, but feel free to use the provided YAMLs through the CLI if you prefer.
+The order of deployment is 
+
+1. Create Product that the user can consume
+2. Create Backend that points to the hosted model 
+3. Create API document the contains the
+4. Create API proxy
+
+[source,bash,role="execute",subs="+macros,+attributes"]
+----
+
+
+
 
 === Navigating to the 3Scale Operator
 

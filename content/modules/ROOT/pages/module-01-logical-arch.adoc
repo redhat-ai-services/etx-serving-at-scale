@@ -91,7 +91,7 @@ image::MaaS-ld.png[MaaS]
 * Customer often have their own API gateways
 * Customer often have their own oidc/auth/authz/security providers
 
-=== Approach
+=== Delivery Approach
 * We must assume customers will have their own API gateway and security providers
 * We will have to work *_WITH_* the customers teams to deploy a MAAS solution
 ** API G/W team
@@ -99,4 +99,4 @@ image::MaaS-ld.png[MaaS]
 ** Logging and Metrics
 * This will be done collaboratively with the customer as part of an *AI Incubator* engagement.
 
-The next section goes into more techical requirements for this
+The next section goes into more techical details around what's required.
