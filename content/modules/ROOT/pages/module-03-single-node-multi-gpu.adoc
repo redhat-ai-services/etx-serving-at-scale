@@ -57,7 +57,16 @@ Require token authentication: Unchecked
 
 +
 image::03-deploy-model-single-gpu.png[Model Options]
-change me
+
+[NOTE]
+====
+OpenShift AI provides a deployment option of `Advanced` and `Standard`.  The `Advanced` option uses KNative Serverless and Service Mesh (Istio) to deploy the model server.  The `Standard` option is also know as a `RawDeployment` and uses standard Kubernetes Deployment objects.
+
+The `Advanced` option allows you to configure advanced scaling capabilities such as Scale to Zero and allows you to autoscale the number of replicas based on the number of queued requests.
+
+The `Standard` option provides more limited scaling capabilities which includes scaling based on the CPU/Memory utilization of the model server.  This is of limited use for LLMs since the bottleneck of the workload is dependent on the GPU resources.
+====
+
 . In the `Source model location` section, choose the option to `Create connection`.  Enter the following information:
 
 +
@@ -69,6 +78,15 @@ URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 ----
 
 image::03-deploy-model-data-connection.png[URI Connection]
+
+[NOTE]
+====
+The Dashboard provides an data connection option for `OCI compliant registry - v1` which we use instead of the URI option.  The OCI option helps to automatically format the `oci://` prefix for the URI and will also give us an option to setup pull secrets for the container registry.
+
+However, the pull secrets are currently not optional and we don't need it since our ModelCar image is public. Additionally, the OCI option does have a few other requirements that aren't super intuitive and should be improved in the future.
+
+If you do wish to use the OCI option, you can simply set the pull secret as an empty object `{}`.
+====
 
 [NOTE]
 ====
@@ -92,7 +110,7 @@ You can extend the timeout by adding the following annotation to the `predictor`
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: vllm
+  name: granite-8b
 spec:
   predictor:
     annotations:
@@ -107,8 +125,11 @@ NAME                                              READY   STATUS            REST
 granite-8b-predictor-00001-deployment-5cd766d5f-t52qm   0/4     PodInitializing   0          43s
 
 If we go ahead and see the logs for the pod, it will eventually fail:
+
 [source,options="wrap"]
+====
 ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request with the models's max seq len (131072), (20.00 GiB KV cache is needed, which is larger than the available KV cache memory (3.84 GiB). Based on the available memory,  Try increasing `gpu_memory_utilization` or decreasing `max_model_len` when initializing the engine.
+====
 
 vLLM is failing to start because it does not have enough vRAM to support the sizing of the default KV Cache. At this point, we can limit the size of the KV Cache, or we can add additional GPU resources to the instance to increase the available vRAM. From the ```Models``` tab, click on the three-dots menu on the right and then edit:
 
@@ -206,7 +227,7 @@ image::03-deploy-model-route.png[Model endpoint]
 +
 [NOTE]
 ====
-Our vLLM instance does not create a normal OpenShift route since we are deploying with Serverless mode so you won't find it under the normal `Networking` > `Routes` menu.  
+Our vLLM instance does not create a normal OpenShift route since we are deploying with "Advanced" (aka Serverless mode) so you won't find it under the normal `Networking` > `Routes` menu.  
 
 Instead it creates a KNative Serving Route object which can be found in `Serverless` > `Serving` or with the following:
 
