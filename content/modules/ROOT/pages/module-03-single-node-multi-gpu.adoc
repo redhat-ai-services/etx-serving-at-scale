@@ -20,7 +20,12 @@ Treating the model as an OCI artifact allows us to easily promote the model betw
 +
 image::03-datascience-project.png[vLLM Project]
 
-. Select the `Models` tab and click `Select single-model`
+. Select the `Models` tab and click `Select single-model` if it hasn't already been set for you.
+
+[NOTE]
+====
+Multi-model serving (Model Mesh) was depreciated in OpenShift AI 2.19 and will be removed in a future release.
+====
 
 +
 image::03-single-model-serving.png[Single Model]
