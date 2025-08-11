@@ -25,7 +25,25 @@ https://github.com/redhat-ai-services/helm-charts/tree/main/charts/vllm-kserve
 
 The chart can be used to deploy an instance using vLLM and exposes many features that are not available when using the OpenShift AI Dashboard.
 
-NOTE: The vLLM KServe Helm chart is not currently supported for multi-node deployments.
+=== Using the Helm Chart with GitOps
+
+While the Helm chart itself is not true GitOps, it does get us one step closer to being able to manage our models using GitOps practices.  With the Helm chart we can easily use ArgoCD's native Helm support to deploy the chart with a values.yaml file, or we can use something like Kustomize to help inflate the chart:
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: vllm-kserve
+  releaseName: my-llm-server
+  version: 0.5.6
+  repo: https://redhat-ai-services.github.io/helm-charts/
+  valuesFile: values.yaml
+```
+
+With this configuration we can point an ArgoCD application directly at the Kustomize configuration and have it deploy the chart with the values.yaml file.
+
+For more options for how to deploy Helm Charts with ArgoCD, take a look at the blog post: https://developers.redhat.com/articles/2023/05/25/3-patterns-deploying-helm-charts-argocd
 
 == Lab: Deploy Additional Models with Helm
 
@@ -43,10 +61,10 @@ helm repo update redhat-ai-services
 . Next, we will update our Helm client to pull the latest charts from the repository:
 
 ```
-helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.4.2 \
+helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.6 \
   --set fullnameOverride="granite-guardian" \
   --set image.tag="rhoai-2.19-cuda" \
-  --set model.uri="quay.io/redhat-ai-services/modelcar-catalog:granite-guardian-3.2-5b" \
+  --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-guardian-3.2-5b" \
   --set model.args={"--max-model-len=20000"} \
   --set deploymentMode=RawDeployment \
   --set scaling.rawDeployment.deploymentStrategy.type=Recreate
@@ -65,3 +83,46 @@ helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.4.2 
 `scaling.rawDeployment.deploymentStrategy.type` will allow us to set the deployment strategy to `Recreate` which will allow us to make updates to the model in the future by first deleting the existing deployment and then creating a new one.  This option is generally not recommended for production environments as it can cause downtime for the model, but it is useful for us since we have a limited number of GPUs and we don't need to worry about downtime.
 
 . To verify that the deployment was successful, check that the pod successfully started and is in the ready state.
+
+== Optional Lab: Redeploy previous models with GitOps
+
+In our previous lab sections, we deployed our models using the OpenShift AI Dashboard.  While this is a great way to get started, it doesn't allow us to easily manage our models using GitOps practices.
+
+. Helm will not allow us to redeploy the same model with the same name, so we will need to delete the existing InferenceService and ServingRuntime.
+
+```
+oc delete inferenceservice granite-8b
+oc delete servingruntime granite-8b
+```
+
+[TIP]
+====
+If you want to redeploy the objects with Helm without downtime or deleting the existing objects, you can manually add the necessary labels/annotations to the objects that helm complains about when running the `helm upgrade` or `helm install` commands.
+
+Run the `helm upgrade` command to see the errors and what labels/annotations are required to be added to the objects.
+
+If you are updating the objects using ArgoCD, these manually changes should not be necessary.
+====
+
+. Next, we can deploy the model with the same options we used in the previous lab.
+
+```
+helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.6 \
+  --set fullnameOverride="granite-8b" \
+  --set image.tag="rhoai-2.19-cuda" \
+  --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct" \
+  --set 'resources.requests.nvidia\.com/gpu=2' \
+  --set 'resources.limits.nvidia\.com/gpu=2'  \
+  --set model.args={"--tensor-parallel-size=2"}
+```
+
+. The same helm chart also supports Mutli-node deployments, however, some of the current bugs in 2.19 prevent us from using it in this lab.  It is recommended to only use the multi-node deployment with OpenShift AI 2.22 or later.
+
+While we can't use the helm chart with this lab, try to review the options we set in the previous lab, and construct a `helm upgrade` command that would allow us to create the same configuration with the helm chart.  You can find documentation for all of the available options on the GitHub repo here:
+
+https://github.com/redhat-ai-services/helm-charts/tree/main/charts/vllm-kserve
+
+[WARNING]
+====
+The helm chart configuration for multi-node deployment is not supported in OpenShift AI 2.19 and will cause issues in this lab.  It is recommended to only use the multi-node deployment options of the helm chart with OpenShift AI 2.22 or later.
+====
