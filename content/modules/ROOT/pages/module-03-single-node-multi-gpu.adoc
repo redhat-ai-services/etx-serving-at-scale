@@ -161,7 +161,7 @@ INFO:     Application startup complete.
 . (Optional) The OpenShift AI Dashboard created two KServe objects, a `ServingRuntime` and an `InferenceService`.  From the OpenShift Web Console, navigate to the `Home` > `Search` page and use the `Resources` drop down menu to search for and select those objects.  Spend a few minutes reviewing the objects created by the Dashboard.
 
 +
-image::02-kserve-objects.png[KServe Objects]
+image::03-kserve-objects.png[KServe Objects]
 
 == Checking our GPU usage
 
