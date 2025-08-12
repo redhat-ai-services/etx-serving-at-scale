@@ -251,7 +251,7 @@ image::MAASSubscriptions.png[]
 
 === Testing the Product
 
-You can now test this new Product in the same way you did for `Granite` in the previous module.
+You can now test this new Product 
 
 * Connect to the Developer Portal at `https://maas.{openshift_cluster_ingress_domain}[https://maas.{openshift_cluster_ingress_domain},window=_blank]` and log in using your credentials.
 
@@ -297,7 +297,7 @@ curl -X 'POST' \
     -H 'Content-Type: application/json' \
     -H 'Authorization: Bearer 5924457cf136e9906c5c98cc5924ab7a' \
     -d '{
-    "model": "tinyllama/tinyllama-1.1b-chat-v1.0",
+    "model": "llama70B",
     "prompt": "San Francisco is a",
     "max_tokens": 15,
     "temperature": 0

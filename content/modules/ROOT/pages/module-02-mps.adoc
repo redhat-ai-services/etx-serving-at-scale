@@ -7,7 +7,7 @@ MPS is not currently supported on OpenShift.
 
 == What is NVIDIA MPS?
 
-The Multi-Process Service (MPS) is an alternative, binary-compatible implementation of the CUDA Application Programming Interface (API). MPS enables multiple CUDA applications to run concurrently on the same GPU, improving overall GPU utilization and performance.
+The _Multi-Process Service_ (MPS) is an alternative, binary-compatible implementation of the CUDA Application Programming Interface (API). MPS enables multiple CUDA applications to run concurrently on the same GPU, improving overall GPU utilization and performance. 
 
 === Key Benefits
 
@@ -16,6 +16,9 @@ The Multi-Process Service (MPS) is an alternative, binary-compatible implementat
 * *Seamless Context Switching*: Swiftly transitions between CUDA contexts to minimize overhead and maximize responsiveness.
 * *Maximized Throughput*: Ensures efficient allocation of GPU resources even when multiple workloads run concurrently.
 
+
+[NOTE]
+MPI, or Message Passing Interface, is a standardized and portable specification for parallel programming, primarily used in high-performance computing (HPC).  MPI is about moving data between distributed memory machines. MPI interacts with main memory while CUDA kernels interacts with the GPU memory.
 
 == Why MPS is Needed
 

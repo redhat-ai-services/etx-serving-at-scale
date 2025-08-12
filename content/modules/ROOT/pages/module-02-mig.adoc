@@ -11,13 +11,16 @@ Modern GPUs like the NVIDIA A100, H100, and H200 are incredibly powerful, often 
 * Multiple users need guaranteed GPU access without interference
 
 Before MIG, your options were limited:
+
 * **Time-sharing**: Users take turns, leading to idle resources
 * **Memory oversubscription**: Risk of out-of-memory errors
 * **Full GPU allocation**: Wasteful for smaller workloads
 
 === The Solution: Multi-Instance GPU (MIG)
 
-MIG allows you to partition a single physical GPU into up to 7 smaller, isolated "virtual GPUs" called **GPU Instances**. Each instance has:
+MIG allows you to partition a single physical GPU into up to 7 smaller, isolated "virtual GPUs" called **GPU Instances**. 
+
+Each instance has:
 
 * **Dedicated memory**: No sharing or interference between instances
 * **Isolated compute resources**: Guaranteed streaming multiprocessors (SMs)
@@ -31,16 +34,19 @@ image::gpu-mig-overview.jpg[MIG Overview, 600]
 === Real-World Benefits
 
 **For Cloud Service Providers:**
+
 * Increase GPU utilization from 30-40% to 80-90%
 * Offer multiple GPU tiers to customers
 * Provide guaranteed performance isolation
 
 **For Enterprises:**
+
 * Enable multiple teams to share expensive GPU resources
 * Isolate development/testing from production workloads
 * Optimize resource allocation across different project requirements
 
 **For AI/ML Teams:**
+
 * Run multiple experiments simultaneously
 * Provide dedicated resources for different model sizes
 * Eliminate resource contention between team members
@@ -51,19 +57,19 @@ image::gpu-mig-overview.jpg[MIG Overview, 600]
 
 Before diving into implementation, let's understand the key building blocks:
 
-==== Streaming Multiprocessor (SM)
+** _Streaming Multiprocessor_ (SM) -
 The fundamental compute unit of the GPU that executes instructions. Think of SMs as CPU cores for the GPU.
 
-==== GPU Memory Slice
+** _GPU Memory Slice_ -
 The smallest unit of GPU memory allocation, roughly 1/8th of total GPU memory including controllers and cache.
 
-==== GPU SM Slice  
+** _GPU SM Slice_ -
 The smallest unit of compute allocation, roughly 1/7th of total streaming multiprocessors.
 
-==== GPU Instance (GI)
+** _GPU Instance_ (GI) -
 A combination of memory slices and SM slices that creates an isolated partition. This is your "virtual GPU."
 
-==== Compute Instance (CI)
+** _Compute Instance_ (CI) -
 A subdivision within a GPU Instance that can further split compute resources while sharing memory.
 
 === How MIG Partitioning Works
@@ -80,7 +86,7 @@ Physical A100-40GB GPU:
 
 image::mig-example.png[MIG partitioning, 600]
 
-==== Creating GPU Instances
+=== Creating GPU Instances
 
 You can combine memory and SM slices to create different GPU Instance profiles:
 
