@@ -36,7 +36,7 @@ kind: Kustomization
 helmCharts:
 - name: vllm-kserve
   releaseName: my-llm-server
-  version: 0.5.6
+  version: 0.5.8
   repo: https://redhat-ai-services.github.io/helm-charts/
   valuesFile: values.yaml
 ```
@@ -61,9 +61,9 @@ helm repo update redhat-ai-services
 . Next, we will update our Helm client to pull the latest charts from the repository:
 
 ```
-helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.6 \
+helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.8 \
   --set fullnameOverride="granite-guardian" \
-  --set image.tag="rhoai-2.19-cuda" \
+  --set image.tag="rhoai-2.22-cuda" \
   --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-guardian-3.2-5b" \
   --set model.args={"--max-model-len=20000"} \
   --set deploymentMode=RawDeployment \
@@ -107,22 +107,45 @@ If you are updating the objects using ArgoCD, these manually changes should not 
 . Next, we can deploy the model with the same options we used in the previous lab.
 
 ```
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.6 \
+helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.8 \
   --set fullnameOverride="granite-8b" \
   --set image.tag="rhoai-2.19-cuda" \
   --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct" \
+  --set 'resources.requests.cpu=4' \
+  --set 'resources.limits.cpu=8' \
+  --set 'resources.requests.memory=8Gi' \
+  --set 'resources.limits.memory=16Gi' \
   --set 'resources.requests.nvidia\.com/gpu=2' \
   --set 'resources.limits.nvidia\.com/gpu=2'  \
   --set model.args={"--tensor-parallel-size=2"}
 ```
 
-. The same helm chart also supports Mutli-node deployments, however, some of the current bugs in 2.19 prevent us from using it in this lab.  It is recommended to only use the multi-node deployment with OpenShift AI 2.22 or later.
+. The same helm chart also supports Mutli-node deployments, however, some of the current bugs in 2.19 prevent us from using it in this lab.  It is recommended to only use the multi-node deployment configuration with OpenShift AI 2.22 or later.
 
-While we can't use the helm chart with this lab, try to review the options we set in the previous lab, and construct a `helm upgrade` command that would allow us to create the same configuration with the helm chart.  You can find documentation for all of the available options on the GitHub repo here:
+Use the helm chart documentation to help you construct a `helm upgrade` command that would allow us to create the same configuration with the helm chart.  You can find documentation for all of the available options on the GitHub repo here:
 
 https://github.com/redhat-ai-services/helm-charts/tree/main/charts/vllm-kserve
 
-[WARNING]
+Just like before, you will need to delete the existing InferenceService and ServingRuntime before running the `helm upgrade` command.
+
+Refer to the answer below to compare your crafted command with the correct one.
+
+[%collapsible]
 ====
-The helm chart configuration for multi-node deployment is not supported in OpenShift AI 2.19 and will cause issues in this lab.  It is recommended to only use the multi-node deployment options of the helm chart with OpenShift AI 2.22 or later.
+```
+helm upgrade -i vllm-multi-node-llama redhat-ai-services/vllm-kserve --version 0.5.8 \
+  --set fullnameOverride="vllm-multi-node-llama" \
+  --set image.tag="rhoai-2.22-cuda" \
+  --set model.uri="pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16" \
+  --set servingTopology=multiNode \
+  --set deploymentMode=RawDeployment \
+  --set multiNode.pipelineParallelSize=2 \
+  --set multiNode.tensorParallelSize=2 \
+  --set 'resources.requests.cpu=4' \
+  --set 'resources.limits.cpu=8' \
+  --set 'resources.requests.memory=8Gi' \
+  --set 'resources.limits.memory=16Gi' \
+  --set 'resources.requests.nvidia\.com/gpu=2' \
+  --set 'resources.limits.nvidia\.com/gpu=2'
+```
 ====
