@@ -2,27 +2,39 @@
 
 == GPU Aggregation Overview
 
-Compute workloads can benefit from using separate GPU partitions. The flexibility of GPU partitioning allows a single GPU to be shared and used by small, medium, and large-sized workloads. GPU partitions can be a valid option for executing Deep Learning workloads. An example is Deep Learning training and inferencing workflows, which utilize smaller datasets but are highly dependent on the size of the data/model, and users may need to decrease batch sizes.
+Compute workloads can benefit from using separate GPU partitions. The flexibility of GPU partitioning allows a single GPU to be shared and used by small, medium, and large-sized workloads. GPU partitions can be a valid option for executing Deep Learning workloads. 
 
 image::gpu-aggregation.png[GPU Aggregation, 600]
 
 == Why GPU Aggregation?
 
-Some Large Language Models (LLMs), such as Llama-3-70B and Falcon 180B, can be too large to fit into the memory of a single GPU (vRAM). Or in some cases, GPUs that would be large-enough might be difficult to obtain. If you find yourself in such a situation, it is natural to wonder whether an aggregation of multiple, smaller GPUs can be used instead of one single large GPU.
+Some Large Language Models (LLMs), such as *Llama-3-70B* and *Falcon 180B*, are too large to fit into the memory (vRAM) of a single current generation GPU.  
 
-Thankfully, the answer is essentially Yes. To address these challenges, we can use more advanced configurations to distribute the LLM workload across several GPUs. One option is leveraging tensor parallelism, where the LLM is split across several GPUs, with each GPU processing a portion of the model's tensors. This approach ensures efficient utilization of available resources (GPUs) across one or several workers.
+To address this challenge, we can use more advanced configurations to distribute the LLM workload across several GPUs. 
 
-Some Serving Runtimes, such as vLLM, support tensor parallelism, allowing for both single-worker and multi-worker configurations (the difference whether your GPUs are all in the same machine, or are spread across machines).
+One option is leveraging _parallelism_, where the LLM is split across several GPUs, with each GPU processing a portion of the model's tensors. This approach ensures efficient utilization of available resources (GPUs) across one or several worker nodes.
 
-== Components of GPU Aggregation
-
-GPU Aggregation is a complex topic and there are many components to consider. Fundementally there are four core concepts to consider: 
+Fundementally there are four core Parallelism techniques to consider: 
 
 * Tensor Parallelism
 * Pipeline Parallelism
 * Data Parallelism
 * Expert Parallelism
 
+
+== Basic Terminology Refresher
+
+In neural networks, a *tensor* is just a fancy word for a multi-dimensional array of numbers — the structure used to store data, model parameters, and intermediate results. It’s the basic building block for all computations in deep learning frameworks like PyTorch or TensorFlow.
+
+
+A *layer* in a neural network is a collection of neurons (or units) that:
+
+* Take an _input tensor_ from the previous layer (or the raw input data)
+* Apply a set of parameters (weights and biases)
+* Perform a transformation (often a linear operation followed by a nonlinear activation)
+* Produce an _output tensor_ that becomes the input for the next layer.
+
+Neural Networks can have multiple layers. They *must* have an _input_ and _output_ layer. All other layers are known as _hidden_ layers.
 
 
 

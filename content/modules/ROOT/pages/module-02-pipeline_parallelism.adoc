@@ -2,7 +2,7 @@
 
 == Overview
 
-When models become so large that they exceed the memory capacity of multiple GPUs within a single node, pipeline parallelism provides a solution for distributed inference across multiple nodes. This technique partitions the model into sequential stages, with each stage containing contiguous layers that are processed by different GPUs or nodes.
+Pipeline parallelism partitions the model into sequential stages, with each stage containing contiguous layers that are processed by different GPUs or nodes.
 
 Pipeline parallelism differs from tensor parallelism in that it splits the model vertically (across layers) rather than horizontally (across tensor dimensions). Each GPU or node in the pipeline processes a complete subset of the model's layers, making it particularly effective for extremely large models like DeepSeek R1 or Llama 3.1 405B that cannot fit on a single node.
 

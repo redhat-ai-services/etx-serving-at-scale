@@ -2,15 +2,13 @@
 
 == Overview
 
-As large language models continue to grow in size and complexity, they often exceed the memory capacity of a single GPU. Tensor parallelism is a distributed computing technique that addresses this challenge by sharding model weights across multiple GPUs, enabling concurrent computation for reduced latency and enhanced scalability.
-
-In tensor parallelism, each GPU processes a slice of a tensor and only aggregates the full tensor when necessary for specific operations. This approach allows larger models to run efficiently across multiple devices while maintaining performance.
+Tensor parallelism distributes large tensor computations across multiple GPUs. The tensors are sliced horizontally or vertically and each slice is processed by a separate GPU. Each GPU performs its calculations on its tensor slice and the results are synchronized at the end to reconstruct the final result.
 
 == How Tensor Parallelism Works
 
 The core principle involves splitting weight matrices strategically:
 
-* **Column-wise splitting**: Weight tensors are divided along columns, with each GPU processing its portion of the matrix multiplication
+* **Column/Row-wise splitting**: Weight tensors are divided along Columns or Rows, with each GPU processing its portion of the matrix multiplication
 * **Result aggregation**: Individual GPU outputs are concatenated or summed to reconstruct the final result
 * **Minimal communication**: GPUs only need to communicate when aggregating results, reducing overhead
 
@@ -47,9 +45,21 @@ Tensor parallelism delivers significant performance improvements by:
 .How tensor parallelism distributes inference computations across multiple GPUs to achieve latency improvements
 image::gpu3.png[Tensor parallelism distribution across GPUs, 600]
 
+
+=== Drawbacks
+
+* **Network Latency**: Tensor parallelism requires frequent communication between GPUs to synchronize intermediate results and gradients.
+* **Load Imbalance & Inefficiency**: If the tensors are not partitioned evenly across the GPUs, it can lead to load imbalance. Some GPUs might end up with more computational work than others, causing them to sit idle while waiting for the busiest GPUs to finish. 
+
+
 === Hardware Requirements
 
 Tensor parallelism requires high-bandwidth interconnects between GPUs to minimize communication overhead:
 
 * **NVLink**: NVIDIA's high-speed interconnect for optimal GPU-to-GPU communication
 * **Network topology**: Proper configuration ensures minimal latency during all-reduce operations
+
+
+=== Additional Resources
+
+* **Hugging face Parallelism Guide**: https://huggingface.co/docs/transformers/perf_train_gpu_many#tensor-parallelism
