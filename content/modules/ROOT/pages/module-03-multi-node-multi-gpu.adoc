@@ -18,10 +18,11 @@ Multi-node vLLM is a Tech Preview feature and is not supported in the OpenShift 
 
 [TIP]
 ====
-Refer to the official documentation for more information on how to deploy a multi-node vLLM instance:Official https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.22/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
+Refer to the official documentation for more information on how to deploy a multi-node vLLM instance: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.22/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
 ====
 
 . To start, we need to process and deploy a template from the ```redhat-ods-applications``` project:
+
 +
 [source,shell]
 ----
@@ -37,6 +38,7 @@ oc get servingruntime vllm-multinode-runtime -n vllm -o yaml
 
 . We have already created a ReadWriteMany (RWX) PVC for the model in the `vllm` namespace and loaded https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16[Llama-3.3-70B-Instruct-quantized.w4a16] into it.  Take a moment to explore the PVC to see what it contains:
 
++
 [source,shell]
 ----
 oc get pvc llama-model -n vllm
@@ -128,6 +130,7 @@ Additionally, the multi-node vLLM should not be confused with https://docs.ray.i
 
 . Once all of our pods have gone to a fully `Ready` state, we can test the model by sending a request to the `head` pod's endpoint.  We can do this by using the `curl` command to send a request to the `head` pod's endpoint.  To start, we will get the name of the model form the models endpoint.
 
++
 [source,shell]
 ----
 curl https://vllm-multi-node-llama-vllm.apps.ocp.l8tvx.sandbox580.opentlc.com/v1/models
@@ -135,6 +138,7 @@ curl https://vllm-multi-node-llama-vllm.apps.ocp.l8tvx.sandbox580.opentlc.com/v1
 
 . Next, we can use `curl` to send a prompt to the model.  We will use the `-d` option to send a JSON payload to the model.
 
++
 [source,shell]
 ----
 curl -X POST https://vllm-multi-node-llama-vllm.apps.ocp.l8tvx.sandbox580.opentlc.com/v1/chat/completions \
