@@ -36,7 +36,7 @@ kind: Kustomization
 helmCharts:
 - name: vllm-kserve
   releaseName: my-llm-server
-  version: 0.5.8
+  version: 0.5.9
   repo: https://redhat-ai-services.github.io/helm-charts/
   valuesFile: values.yaml
 ```
@@ -61,7 +61,7 @@ helm repo update redhat-ai-services
 . Next, we will update our Helm client to pull the latest charts from the repository:
 
 ```
-helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.8 \
+helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set fullnameOverride="granite-guardian" \
   --set image.tag="rhoai-2.22-cuda" \
   --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-guardian-3.2-5b" \
@@ -107,7 +107,7 @@ If you are updating the objects using ArgoCD, these manually changes should not 
 . Next, we can deploy the model with the same options we used in the previous lab.
 
 ```
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.8 \
+helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set fullnameOverride="granite-8b" \
   --set image.tag="rhoai-2.19-cuda" \
   --set model.uri="oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct" \
@@ -133,7 +133,7 @@ Refer to the answer below to compare your crafted command with the correct one.
 [%collapsible]
 ====
 ```
-helm upgrade -i vllm-multi-node-llama redhat-ai-services/vllm-kserve --version 0.5.8 \
+helm upgrade -i vllm-multi-node-llama redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set fullnameOverride="vllm-multi-node-llama" \
   --set image.tag="rhoai-2.22-cuda" \
   --set model.uri="pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16" \
