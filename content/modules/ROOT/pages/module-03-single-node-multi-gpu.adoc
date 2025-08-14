@@ -192,7 +192,7 @@ INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7
 INFO:     Started server process [4]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-```
+====
 
 . A new vLLM instance will be created in the OpenShift AI Dashboard.  Return to the https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/vllm/core%7Ev1%7EPod?name=granite-8b-predictor[OpenShift Web Console] and check the pods in the `vllm` project.  You should find a pod called `granite-8b-predictor-00001-deployment-*`.  Check the pods `Events` and `Logs` to follow the progress for the pod until it becomes ready.
 
