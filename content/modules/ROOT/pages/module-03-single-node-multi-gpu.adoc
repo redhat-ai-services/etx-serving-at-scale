@@ -168,8 +168,7 @@ image::03-edit-model-config.png[Edit configuration]
 +
 image::03-deploy-model-parameters.png[Runtime Arguments]
 
-+
-This will create an updated deployment called `granite-8b-predictor-00002-deployment-*`: 
+. This will create an updated deployment called `granite-8b-predictor-00002-deployment-*`: 
 
 +
 [source,bash]
@@ -178,6 +177,9 @@ oc get pods -n vllm
 NAME                                               READY   STATUS    RESTARTS   AGE
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
 ====
+
++
+Follow the logs of the pod until it is ready.
 
 +
 [source,bash]
