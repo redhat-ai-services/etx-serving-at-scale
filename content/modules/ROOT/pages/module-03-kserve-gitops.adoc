@@ -121,6 +121,9 @@ helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set model.args={"--tensor-parallel-size=2"}
 ----
 
++
+Monitor the pod logs to ensure that the pod successfully starts.
+
 . The same helm chart also supports Mutli-node deployments, however, it is recommended to only use the multi-node deployment configuration with OpenShift AI 2.22 or later.
 
 +
