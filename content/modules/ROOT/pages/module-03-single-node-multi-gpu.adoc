@@ -26,6 +26,8 @@ image::03-datascience-project.png[vLLM Project]
 [NOTE]
 ====
 Multi-model serving (Model Mesh) was depreciated in OpenShift AI 2.19 and will be removed in a future release.
+
+All ServingRuntimes that were previously available with the Multi-model serving platform are now available as single-model serving runtimes.
 ====
 
 +
