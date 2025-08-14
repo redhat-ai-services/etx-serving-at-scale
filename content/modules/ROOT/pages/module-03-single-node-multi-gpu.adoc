@@ -1,4 +1,4 @@
-= Deploying a Model with vLLM on a single node with multiple GPUS
+= Deploying a Model with vLLM on a single node with multiple GPUs
 
 In this section will will deploy a https://huggingface.co/ibm-granite/granite-3.3-8b-instruct[Granite 3.3 8B Instruct] model using vLLM.
 
@@ -13,7 +13,7 @@ ModelCar is a great option for smaller models like our 8B model.  While it is st
 Treating the model as an OCI artifact allows us to easily promote the model between different environments using customers existing promotion processes.  By contrast, dealing with promoting models between S3 instances in different environments may create new challenges.
 ====
 
-== Creating the vLLM Instance
+== Lab: Creating the vLLM Instance
 
 . Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}[OpenShift AI Dashboard] and select the `vllm` project from the list of Data Science Projects
 
@@ -47,8 +47,8 @@ Number of model server replicas to deploy: 1
 Model server size: Custom
 CPUs requested: 4 Cores
 CPUs limit: 8 Cores
-Memory requested: 24 GiB
-Memory limit: 32 GiB
+Memory requested: 8 GiB
+Memory limit: 16 GiB
 Accelerator: NVIDIA GPU
 Number of accelerators: 1
 Make deployed models available through an external route: Checked
@@ -163,7 +163,7 @@ INFO:     Application startup complete.
 +
 image::03-kserve-objects.png[KServe Objects]
 
-== Checking our GPU usage
+== Lab: Checking our GPU usage
 
 We can rsh into the pod and see the GPUs that have been made available to the pod with the `nvidia-smi` command.
 
@@ -213,7 +213,7 @@ Thu Jul 17 12:56:28 2025
 +-----------------------------------------------------------------------------------------+
 ```
 
-== Testing vLLM Endpoints
+== Lab:Testing vLLM Endpoints
 
 === Accessing the Swagger Docs
 

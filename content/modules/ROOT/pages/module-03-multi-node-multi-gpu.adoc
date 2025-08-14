@@ -1,359 +1,151 @@
-=== Work in progress! ===
+= Deploying a Model with vLLM on a multiple node with multiple GPUs
 
 We have successfully deployed vLLM on a single node with multiple GPUs, the natural next step is going to deploy a vLLM instance over multiple nodes with multiple GPUs.
 
-In order to do that, we'll need to process and deploy a template from the ```redhat-ods-applications``` project:
-```
-oc process vllm-multinode-runtime-template -n redhat-ods-applications|oc apply -n vllm -f -
-```
+== Multi-node vLLM Overview
 
-Official doc page: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.19/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
+Multi-node vLLM is a powerful tool for deploying larger models that won't fit on the GPUs available in a single node.
 
-In order for this architecture to work, we need the model to be stored in a RWX PVC, which we already prepared for your convenience in the project:
-```
-oc get pvc llama-model 
-NAME          STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
-llama-model   Bound    pvc-3d02084b-66d8-4e49-9eac-1bf9ab4f05ed   60Gi       RWX            ocs-storagecluster-cephfs   <unset>                 25h
-```
+For example, a node with 8x H100 (80Gb vRAM each) has a total of 640Gb of vRAM.  An un-quantized version of Llama 405b requires approximately 900Gb of vRAM just to load the model (not factoring in the KV Cache requirements) so the model must be broken up across multiple nodes.
 
-WARNING: they're gonna run into issues, here's the working ServingRuntime object:
+Multi-node vLLM enables us to start multiple pods with a `head` node and additional `worker` nodes.  The `head` will act as the main vLLM server, and both the model and KV Cache will be distributed across the nodes.
+
+Multi-node instances do not have all of the same capabilities as a single node instance.  For example, multi-node instances are only available as `Standard` (aka RawDeployment) and not `Advanced` (aka Serverless).  Additionally, multi-node instances only support serving models from a ReadWriteMany (RWX) PVC or a ModelCar image.  They do not support serving models directly from an S3 bucket.
+
+== Lab: Deploying a Multi-node vLLM Instance
+
+Multi-node vLLM is a Tech Preview feature and is not supported in the OpenShift AI Dashboard.  However, we can still deploy it using the CLI.
+
+[TIP]
+====
+Refer to the official documentation for more information on how to deploy a multi-node vLLM instance: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.22/html-single/serving_models/index#deploying-models-using-multiple-gpu-nodes_serving-large-models
+====
+
+. To start, we need to process and deploy a template from the ```redhat-ods-applications``` project:
+
++
+[source,shell]
+----
+oc process vllm-multinode-runtime-template -n redhat-ods-applications | oc apply -n vllm -f -
+----
+
+. Processing the template will create a `ServingRuntime` object in the `vllm` namespace called `vllm-multinode-runtime`.  Take a moment and explore the ServingRuntime to see what it contains:
++
+[source,shell]
+----
+oc get servingruntime vllm-multinode-runtime -n vllm -o yaml
+----
+
+. We have already created a ReadWriteMany (RWX) PVC for the model in the `vllm` namespace and loaded https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16[Llama-3.3-70B-Instruct-quantized.w4a16] into it.  Take a moment to explore the PVC to see what it contains:
+
++
+[source,shell]
+----
+oc get pvc llama-model -n vllm
+----
+
+. Next, we will need to create the `InferenceService` object that will be used to serve the model.
+
++
 [source,yaml]
----
-apiVersion: serving.kserve.io/v1alpha1
-kind: ServingRuntime
-metadata:
-  annotations:
-    opendatahub.io/accelerator-name: migrated-gpu
-    opendatahub.io/apiProtocol: REST
-    opendatahub.io/hardware-profile-name: ""
-    opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-    opendatahub.io/template-display-name: vLLM Multi-Node ServingRuntime for KServe
-    openshift.io/display-name: vllm-multinode-runtime
-  creationTimestamp: "2025-07-16T09:33:09Z"
-  generation: 4
-  labels:
-    opendatahub.io/dashboard: "true"
-  name: vllm-multinode-runtime
-  namespace: vllm
-  resourceVersion: "3105432"
-  uid: d3a31093-c548-43ea-a23f-96b8b12b9883
-spec:
-  annotations:
-    prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
-  containers:
-  - args:
-    - "ray start --head --disable-usage-stats --include-dashboard false \n# wait for
-      other node to join\nuntil [[ $(ray status --address ${RAY_ADDRESS} | grep -c
-      node_) -eq ${PIPELINE_PARALLEL_SIZE} ]]; do\n  echo \"Waiting...\"\n  sleep
-      1\ndone\nray status --address ${RAY_ADDRESS}\n\nexport SERVED_MODEL_NAME=${MODEL_NAME}\nexport
-      MODEL_NAME=${MODEL_DIR} \n\nexec python3 -m vllm.entrypoints.openai.api_server
-      --port=8080 --max-model-len=100000 --distributed-executor-backend ray --model=${MODEL_NAME}
-      --served-model-name=${SERVED_MODEL_NAME} --tensor-parallel-size=${TENSOR_PARALLEL_SIZE}
-      --pipeline-parallel-size=${PIPELINE_PARALLEL_SIZE} --disable_custom_all_reduce\n"
-    command:
-    - bash
-    - -c
-    env:
-    - name: RAY_USE_TLS
-      value: "1"
-    - name: RAY_TLS_SERVER_CERT
-      value: /etc/ray/tls/tls.pem
-    - name: RAY_TLS_SERVER_KEY
-      value: /etc/ray/tls/tls.pem
-    - name: RAY_TLS_CA_CERT
-      value: /etc/ray/tls/ca.crt
-    - name: RAY_PORT
-      value: "6379"
-    - name: RAY_ADDRESS
-      value: 127.0.0.1:6379
-    - name: POD_IP
-      valueFrom:
-        fieldRef:
-          fieldPath: status.podIP
-    - name: POD_NAMESPACE
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.namespace
-    - name: VLLM_NO_USAGE_STATS
-      value: "1"
-    - name: HOME
-      value: /tmp
-    - name: HF_HOME
-      value: /tmp/hf_home
-    image: quay.io/modh/vllm@sha256:79e1f24bba1d3e694f47f66ba9f8184e70310a10b77bf11c0febd0c926234950
-    livenessProbe:
-      exec:
-        command:
-        - bash
-        - -c
-        - "# Check if the registered ray nodes count is greater or the same than PIPELINE_PARALLEL_SIZE\nregistered_node_count=$(ray
-          status --address ${RAY_ADDRESS} | grep -c node_)\nif [[ ! ${registered_node_count}
-          -ge \"${PIPELINE_PARALLEL_SIZE}\" ]]; then\n  echo \"Unhealthy - Registered
-          nodes count (${registered_node_count}) must not be less PIPELINE_PARALLEL_SIZE
-          (${PIPELINE_PARALLEL_SIZE}).\"\n  exit 1\nfi     \n\n# Check model health\nhealth_check=$(curl
-          -o /dev/null -s -w \"%{http_code}\\n\" http://localhost:8080/health)\nif
-          [[ ${health_check} != 200 ]]; then\n  echo \"Unhealthy - vLLM Runtime Health
-          Check failed.\" \n  exit 1\nfi    \n"
-      failureThreshold: 2
-      periodSeconds: 5
-      successThreshold: 1
-      timeoutSeconds: 15
-    name: kserve-container
-    ports:
-    - containerPort: 8080
-      name: http
-      protocol: TCP
-    readinessProbe:
-      exec:
-        command:
-        - bash
-        - -c
-        - "# Check model health \nhealth_check=$(curl -o /dev/null -s -w \"%{http_code}\\n\"
-          http://localhost:8080/health)\nif [[ ${health_check} != 200 ]]; then\n  echo
-          \"Unhealthy - vLLM Runtime Health Check failed.\" \n  exit 1\nfi\n"
-      failureThreshold: 2
-      periodSeconds: 5
-      successThreshold: 1
-      timeoutSeconds: 15
-    startupProbe:
-      exec:
-        command:
-        - bash
-        - -c
-        - "# This need when head node have issues and restarted.\n# It will wait for
-          new worker node.                     \nregistered_node_count=$(ray status
-          --address ${RAY_ADDRESS} | grep -c node_)\nif [[ ! ${registered_node_count}
-          -ge \"${PIPELINE_PARALLEL_SIZE}\" ]]; then\n  echo \"Unhealthy - Registered
-          nodes count (${registered_node_count}) must not be less PIPELINE_PARALLEL_SIZE
-          (${PIPELINE_PARALLEL_SIZE}).\"\n  exit 1\nfi\n\n# Double check to make sure
-          Model is ready to serve.\nfor i in 1 2; do                    \n  # Check
-          model health\n  health_check=$(curl -o /dev/null -s -w \"%{http_code}\\n\"
-          http://localhost:8080/health)\n  if [[ ${health_check} != 200 ]]; then\n
-          \   echo \"Unhealthy - vLLM Runtime Health Check failed.\" \n    exit 1\n
-          \ fi\ndone\n"
-      failureThreshold: 40
-      initialDelaySeconds: 20
-      periodSeconds: 30
-      successThreshold: 1
-      timeoutSeconds: 30
-    volumeMounts:
-    - mountPath: /dev/shm
-      name: shm
-    - mountPath: /etc/ray/tls
-      name: ray-tls
-  multiModel: false
-  supportedModelFormats:
-  - autoSelect: true
-    name: vLLM
-    priority: 2
-  volumes:
-  - emptyDir:
-      medium: Memory
-      sizeLimit: 12Gi
-    name: shm
-  - emptyDir: {}
-    name: ray-tls
-  - name: ray-tls-secret
-    secret:
-      secretName: ray-tls
-  workerSpec:
-    containers:
-    - args:
-      - "SECONDS=0\n\nwhile true; do              \n  if (( SECONDS <= 240 )); then\n
-        \   if ray health-check --address \"${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:6379\"
-        > /dev/null 2>&1; then\n      echo \"Global Control Service(GCS) is ready.\"\n
-        \     break\n    fi\n    echo \"$SECONDS seconds elapsed: Waiting for Global
-        Control Service(GCS) to be ready.\"\n  else\n    if ray health-check --address
-        \"${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:6379\"; then\n      echo
-        \"Global Control Service(GCS) is ready. Any error messages above can be safely
-        ignored.\"\n      break\n    fi\n    echo \"$SECONDS seconds elapsed: Still
-        waiting for Global Control Service(GCS) to be ready.\"\n    echo \"For troubleshooting,
-        refer to the FAQ at https://docs.ray.io/en/master/cluster/kubernetes/troubleshooting/troubleshooting.html#kuberay-troubleshootin-guides\"\n
-        \ fi\n\n  sleep 5\ndone\n\nexport RAY_HEAD_ADDRESS=\"${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:6379\"\necho
-        \"Attempting to connect to Ray cluster at $RAY_HEAD_ADDRESS ...\"\nray start
-        --address=\"${RAY_HEAD_ADDRESS}\" --block\n"
-      command:
-      - bash
-      - -c
-      env:
-      - name: RAY_USE_TLS
-        value: "1"
-      - name: RAY_TLS_SERVER_CERT
-        value: /etc/ray/tls/tls.pem
-      - name: RAY_TLS_SERVER_KEY
-        value: /etc/ray/tls/tls.pem
-      - name: RAY_TLS_CA_CERT
-        value: /etc/ray/tls/ca.crt
-      - name: POD_NAME
-        valueFrom:
-          fieldRef:
-            fieldPath: metadata.name
-      - name: POD_NAMESPACE
-        valueFrom:
-          fieldRef:
-            fieldPath: metadata.namespace
-      - name: POD_IP
-        valueFrom:
-          fieldRef:
-            fieldPath: status.podIP
-      image: quay.io/modh/vllm@sha256:79e1f24bba1d3e694f47f66ba9f8184e70310a10b77bf11c0febd0c926234950
-      livenessProbe:
-        exec:
-          command:
-          - bash
-          - -c
-          - |
-            # Check if the registered nodes count matches PIPELINE_PARALLEL_SIZE
-            registered_node_count=$(ray status --address ${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:6379 | grep -c node_)
-            if [[ ! ${registered_node_count} -ge "${PIPELINE_PARALLEL_SIZE}" ]]; then
-              echo "Unhealthy - Registered nodes count (${registered_node_count}) must not be less PIPELINE_PARALLEL_SIZE (${PIPELINE_PARALLEL_SIZE})."
-              exit 1
-            fi
-        failureThreshold: 2
-        periodSeconds: 5
-        successThreshold: 1
-        timeoutSeconds: 15
-      name: worker-container
-      resources:
-        limits:
-          cpu: "16"
-          memory: 48Gi
-        requests:
-          cpu: "8"
-          memory: 24Gi
-      startupProbe:
-        exec:
-          command:
-          - /bin/sh
-          - -c
-          - "registered_node_count=$(ray status --address ${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:6379
-            | grep -c node_)\nif [[ ! ${registered_node_count} -ge \"${PIPELINE_PARALLEL_SIZE}\"
-            ]]; then\n  echo \"Unhealthy - Registered nodes count (${registered_node_count})
-            must not be less PIPELINE_PARALLEL_SIZE (${PIPELINE_PARALLEL_SIZE}).\"\n
-            \ exit 1\nfi  \n\n# Double check to make sure Model is ready to serve.\nfor
-            i in 1 2; do\n  # Check model health\n  model_health_check=$(curl -s ${HEAD_SVC}.${POD_NAMESPACE}.svc.cluster.local:8080/v1/models|grep
-            -o ${ISVC_NAME})\n  if [[ ${model_health_check} != \"${ISVC_NAME}\" ]];
-            then\n    echo \"Unhealthy - vLLM Runtime Health Check failed.\"\n    exit
-            1\n  fi                     \n  sleep 10\ndone\n"
-        failureThreshold: 40
-        initialDelaySeconds: 20
-        periodSeconds: 30
-        successThreshold: 1
-        timeoutSeconds: 30
-      volumeMounts:
-      - mountPath: /dev/shm
-        name: shm
-      - mountPath: /etc/ray/tls
-        name: ray-tls
-    pipelineParallelSize: 2
-    tensorParallelSize: 2
-    volumes:
-    - emptyDir:
-        medium: Memory
-        sizeLimit: 12Gi
-      name: shm
-    - emptyDir: {}
-      name: ray-tls
-    - name: ray-tls-secret
-      secret:
-        secretName: ray-tls
-
-
-Once that's done, we need to create the InferenceService via CLI as it's unavailable through the UI:
-[source,yaml]
----
+----
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: vllm-multi-node-llama
     serving.kserve.io/autoscalerClass: external
-    serving.kserve.io/deploymentMode: RawDeployment
+    serving.kserve.io/deploymentMode: RawDeployment # 1
   labels:
-    networking.kserve.io/visibility: exposed
-    opendatahub.io/dashboard: "true"
+    networking.kserve.io/visibility: exposed # 2
   name: vllm-multi-node-llama
-  namespace: vllm
 spec:
   predictor:
-    maxReplicas: 1
     minReplicas: 1
     model:
-      args:
+      args: # 3
       - --max-model-len=100000
       modelFormat:
         name: vLLM
       name: ""
       resources:
         limits:
-          cpu: "16"
-          memory: 48Gi
+          cpu: "8"
+          memory: 12Gi
           nvidia.com/gpu: "2"
         requests:
-          cpu: "8"
-          memory: 24Gi
+          cpu: "4"
+          memory: 8Gi
           nvidia.com/gpu: "2"
       runtime: vllm-multinode-runtime
-      storageUri: pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16
+      storageUri: pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16 # 4
     tolerations:
     - effect: NoSchedule
       key: nvidia.com/gpu
       operator: Exists
     workerSpec:
-      tensorParallelSize: 2
-      pipelineParallelSize: 2
+      containers:
+      - name: worker-container
+        resources:
+          limits:
+            cpu: "8"
+            memory: 12Gi
+            nvidia.com/gpu: "2"
+          requests:
+            cpu: "4"
+            memory: 8Gi
+            nvidia.com/gpu: "2"
+      pipelineParallelSize: 2 # 5
+      tensorParallelSize: 2 # 6
       tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
         operator: Exists
+----
 
+1. Multi-node vLLM is only available as `RawDeployment` mode and not `Serverless` mode.
+2. The `exposed` label tells KServe to create a Route to expose the model outside of the cluster.
+3. The `args` section is used to set additional arguments needed to help start the model.  In our case, we are limiting the sizing of the KV Cache to 100,000 tokens to allow it to fit on the GPUs in our multi-node setup.
+4. The `storageUri` section is used to provide details of where our model exists.  In this case our pvc is named `llama-model` and the folder container the model is `Llama-3.3-70B-Instruct-quantized.w4a16`.
+5. The `pipelineParallelSize` section is used to set the number worker pods that will be created to serve the model.
+6. The `tensorParallelSize` section is used to define the number of GPUs available to each worker pod.
 
-After that, we'll have our two pods starting a ray cluster, and once they both join the cluster vLLM will start and the model will be served
+. Once the `InferenceService` is created, we can see the two new pods that have been created.  The `vllm-multi-node-llama-predictor-head-<hash>` pod is the `head` node and the `vllm-multi-node-llama-predictor-worker-<hash>` pod is the `worker` node.
 
-```
-vllm-multi-node-llama-predictor-5484cb9cfc-lgzd9 - head
++
+[source,shell]
+----
+oc get pods -n vllm
+----
 
-2025-07-16 13:47:37,113	INFO usage_lib.py:441 -- Usage stats collection is disabled.
-2025-07-16 13:47:37,114	INFO scripts.py:971 -- Local node IP: 10.130.2.44
-2025-07-16 13:47:39,012	SUCC scripts.py:1007 -- --------------------
-2025-07-16 13:47:39,012	SUCC scripts.py:1008 -- Ray runtime started.
-2025-07-16 13:47:39,012	SUCC scripts.py:1009 -- --------------------
-2025-07-16 13:47:39,012	INFO scripts.py:1011 -- Next steps
-2025-07-16 13:47:39,012	INFO scripts.py:1014 -- To add another node to this Ray cluster, run
-2025-07-16 13:47:39,012	INFO scripts.py:1017 --   ray start --address='10.130.2.44:6379'
-2025-07-16 13:47:39,012	INFO scripts.py:1026 -- To connect to this Ray cluster:
-2025-07-16 13:47:39,012	INFO scripts.py:1028 -- import ray
-2025-07-16 13:47:39,012	INFO scripts.py:1029 -- ray.init()
-2025-07-16 13:47:39,012	INFO scripts.py:1060 -- To terminate the Ray runtime, run
-2025-07-16 13:47:39,012	INFO scripts.py:1061 --   ray stop
-2025-07-16 13:47:39,012	INFO scripts.py:1064 -- To view the status of the cluster, use
-2025-07-16 13:47:39,012	INFO scripts.py:1065 --   ray status
-Waiting...
-======== Autoscaler status: 2025-07-16 13:47:43.159225 ========
-Node status
----------------------------------------------------------------
-Active:
- 1 node_47c67b04c64a3da5738a91410e3ed893c7c0792104a52da130564287
- 1 node_f266b870619c7f307db957e9c57d74934e5f7a2a4fe9b381b9357e68
+. Check the logs of both the `head` and `worker` pods.  You should see a `ray` cluster starting in the `head` pod followed by some logs from vllm starting up.  In the `worker` you will see a the `ray` instance starting and the worker pod will join the cluster.
 
-[...]
+[NOTE]
+====
+The multi-node vLLM instance uses Ray as part of the backend to manage the communication between the pods.  vLLM is responsible for managing our Ray cluster for us as part of the deployment and it does not use any of OpenShift AI's Distributed Compute capabilities with CodeFlare and KubeRay.
 
-INFO 07-16 13:47:56 [__init__.py:239] Automatically detected platform cuda.
-INFO 07-16 13:47:58 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
+Additionally, the multi-node vLLM should not be confused with https://docs.ray.io/en/latest/serve/index.html[Ray Serve], which is a ray based serving framework for predictive models.
+====
 
+== Lab: Testing the Multi-node vLLM Instance
 
-vllm-multi-node-llama-predictor-worker-8b97c66f9-7m29v
+. Once all of our pods have gone to a fully `Ready` state, we can test the model by sending a request to the `head` pod's endpoint.  We can do this by using the `curl` command to send a request to the `head` pod's endpoint.  To start, we will get the name of the model form the models endpoint.
 
-Global Control Service(GCS) is ready.
-Attempting to connect to Ray cluster at vllm-multi-node-llama-head-1.vllm.svc.cluster.local:6379 ...
-2025-07-16 13:47:40,785	INFO scripts.py:1152 -- Local node IP: 10.131.2.61
-2025-07-16 13:47:40,957	SUCC scripts.py:1168 -- --------------------
-2025-07-16 13:47:40,957	SUCC scripts.py:1169 -- Ray runtime started.
-2025-07-16 13:47:40,957	SUCC scripts.py:1170 -- --------------------
-2025-07-16 13:47:40,957	INFO scripts.py:1172 -- To terminate the Ray runtime, run
-2025-07-16 13:47:40,957	INFO scripts.py:1173 --   ray stop
-2025-07-16 13:47:40,958	INFO scripts.py:1181 -- --block
-2025-07-16 13:47:40,958	INFO scripts.py:1182 -- This command will now block forever until terminated by a signal.
-2025-07-16 13:47:40,958	INFO scripts.py:1185 -- Running subprocesses are monitored and a message will be printed if any of them terminate unexpectedly. Subprocesses exit with SIGTERM will be treated as graceful, thus NOT reported.
-```
++
+[source,shell]
+----
+curl https://vllm-multi-node-llama-vllm.apps.ocp.l8tvx.sandbox580.opentlc.com/v1/models
+----
+
+. Next, we can use `curl` to send a prompt to the model.  We will use the `-d` option to send a JSON payload to the model.
+
++
+[source,shell]
+----
+curl -X POST https://vllm-multi-node-llama-vllm.apps.ocp.l8tvx.sandbox580.opentlc.com/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "vllm-multi-node-llama",
+      "prompt": "Explain what the following regex statement does: `^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$`",
+      "max_tokens": 500
+    }'
+----
