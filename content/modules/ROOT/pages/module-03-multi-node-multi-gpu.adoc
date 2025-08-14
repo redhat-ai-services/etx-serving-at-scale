@@ -30,6 +30,7 @@ oc process vllm-multinode-runtime-template -n redhat-ods-applications | oc apply
 ----
 
 . Processing the template will create a `ServingRuntime` object in the `vllm` namespace called `vllm-multinode-runtime`.  Take a moment and explore the ServingRuntime to see what it contains:
+
 +
 [source,shell]
 ----
@@ -102,6 +103,7 @@ spec:
         operator: Exists
 ----
 
++
 1. Multi-node vLLM is only available as `RawDeployment` mode and not `Serverless` mode.
 2. The `exposed` label tells KServe to create a Route to expose the model outside of the cluster.
 3. The `args` section is used to set additional arguments needed to help start the model.  In our case, we are limiting the sizing of the KV Cache to 100,000 tokens to allow it to fit on the GPUs in our multi-node setup.
@@ -119,6 +121,7 @@ oc get pods -n vllm
 
 . Check the logs of both the `head` and `worker` pods.  You should see a `ray` cluster starting in the `head` pod followed by some logs from vllm starting up.  In the `worker` you will see a the `ray` instance starting and the worker pod will join the cluster.
 
++
 [NOTE]
 ====
 The multi-node vLLM instance uses Ray as part of the backend to manage the communication between the pods.  vLLM is responsible for managing our Ray cluster for us as part of the deployment and it does not use any of OpenShift AI's Distributed Compute capabilities with CodeFlare and KubeRay.
