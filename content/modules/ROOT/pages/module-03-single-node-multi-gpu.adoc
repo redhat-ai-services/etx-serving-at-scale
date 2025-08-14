@@ -157,10 +157,7 @@ vLLM is failing to start because it does not have enough vRAM to support the siz
 +
 image::03-edit-model-config.png[Edit configuration]
 
-. Update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
-
-+
-Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
+. Update `Number of accelerators` to 2, and in the `Additional serving runtime arguments` add the following:
 
 +
 [source,bash]
