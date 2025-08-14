@@ -102,6 +102,7 @@ Additionally, the source for building these ModelCar images can be found on http
 For more information on ModelCar see the KServe https://kserve.github.io/website/latest/modelserving/storage/oci/[Serving models with OCI images] documentation.
 ====
 
++
 [TIP]
 ====
 A copy of the image has already been pulled onto the GPU node to help speed up deploying the model, but deploying LLMs can take quite some time.
@@ -160,6 +161,8 @@ image::03-edit-model-config.png[Edit configuration]
 
 +
 Then, update ```Number of accelerators``` to 2, and in the ```Additional serving runtime arguments``` add the following:
+
++
 [source,bash]
 ====
 --tensor-parallel-size=2
