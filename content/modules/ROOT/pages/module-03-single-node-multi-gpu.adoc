@@ -146,7 +146,7 @@ oc logs -n vllm -f granite-8b-predictor-00001-deployment-<sha>
 You will find that the pod with eventually fail with the following error message.
 
 +
-[source]
+[source,options="wrap"]
 ----
 ERROR 07-16 07:47:09 [core.py:387] ValueError: To serve at least one request with the models's max seq len (131072), (20.00 GiB KV cache is needed, which is larger than the available KV cache memory (3.84 GiB). Based on the available memory,  Try increasing `gpu_memory_utilization` or decreasing `max_model_len` when initializing the engine.
 ----
