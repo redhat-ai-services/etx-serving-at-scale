@@ -206,22 +206,24 @@ We can rsh into the pod and see the GPUs that have been made available to the po
 
 To rsh into the pod, start out by getting the pod name:
 
-```
+[source,bash]
+----
 oc get pods -n vllm
 NAME                                               READY   STATUS    RESTARTS   AGE
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          17s
-```
+----
 
 Then use the pod name to rsh into the pod:
 
-```
+[source,bash]
+----
 oc -n vllm rsh granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn
-sh-5.1$
-```
+----
 
 Finally, run the `nvidia-smi` command to view the available GPUs and the vRAM utilization.
 
-```
+[source,bash]
+----
 nvidia-smi
 Thu Jul 17 12:56:28 2025
 +-----------------------------------------------------------------------------------------+
@@ -248,7 +250,7 @@ Thu Jul 17 12:56:28 2025
 |    0   N/A  N/A             255      C   python                                21574MiB |
 |    1   N/A  N/A             267      C   python                                21574MiB |
 +-----------------------------------------------------------------------------------------+
-```
+----
 
 == Lab:Testing vLLM Endpoints
 
@@ -292,7 +294,8 @@ To get around this, try accessing the OCP web console through an Incognito windo
 . Once you have the model name, find the `POST /v1/chat/completions` endpoint and use the `Try it out` and use the following as the Request body.
 
 
-```
+[source,json]
+----
 {
   "model": "granite-8b",
   "messages":[ 
@@ -306,7 +309,7 @@ To get around this, try accessing the OCP web console through an Incognito windo
     }
   ]
 }
-```
+----
 
 You should receive a response with an answer to the question.
 
