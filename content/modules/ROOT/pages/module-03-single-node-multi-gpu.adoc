@@ -220,6 +220,7 @@ oc logs -l serving.knative.dev/service=granite-8b-predictor -n vllm --follow
 
 +
 [source,bash]
+----
 INFO 07-16 07:53:42 [__init__.py:239] Automatically detected platform cuda.
 INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
 [...]
