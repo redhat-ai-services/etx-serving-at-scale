@@ -328,11 +328,13 @@ You should see two GPUs available to the pod, and somewhere around 21574MiB of v
 +
 Additionally you will see two `python` processes running, one for each GPU.
 
+. To exit the pod, use `ctrl+D` or type `exit`.
+
 == Lab:Testing vLLM Endpoints
 
 Finally, we will access the Swagger docs page to test our vLLM endpoint.
 
-. To start we will need to find the endpoint URL for the served model.  From the OpenShift AI Dashboard, navigate to the Models tab and click on the `Internal and external endpoint details` to find the URL.
+. To start we will need to find the endpoint URL for the served model.  From the OpenShift AI Dashboard, navigate to the Models tab and click on the `Internal and external endpoint details` to find the URL.  Click the `Copy` button to copy the URL to your clipboard.
 
 +
 image::03-deploy-model-route.png[Model endpoint]
@@ -349,22 +351,32 @@ oc get routes.serving.knative.dev -n vllm
 ----
 ====
 
-. Use the `copy` option for the route found in the previous step and paste it into a new tab with `/docs` at the end to access a FastAPI Swagger Docs page for vLLM.
+. Using the route we copied in the previous step, open a new tab and paste it into the URL field with `/docs` at the end to access a FastAPI Swagger Docs page for vLLM.
 
 +
 image::03-model-docs-page.png[Docs page]
 
-. Use the `Try it out` option of the `GET /v1/models` endpoint to list the models being deployed by this server.  Note that the id for our model matches the name of the model server we created in the OpenShift AI Dashboard.
+. Find the `GET /v1/models` endpoint section and expand it.  Use the `Try it out` option to query the endpoint by clicking `Execute`.
 
 +
 image::03-llm-docs-run-v1-models.png[V1 Modules]
 
-+
-[WARNING]
-====
-Running into a 404 error on the OCP web console after trying this?
+. Find the model name in the response body in the `id` field of the first entry in the `data` array.
 
-There is a known issue that can cause the OCP Web console to stop responding after accessing the Swagger docs.  To get around this, try accessing the OCP Web console through an Incognito window or a different browser.
++
+image::03-model-response.png[Models Response]
+
++
+[TIP]
+====
+The model id should match the name of the model server we created in the OpenShift AI Dashboard (e.g. `granite-8b`).
+
+However, you can set the model name to any value you want by setting an additional argument for the model server.  This is commonly used to set the model name to match the Hugging Face model name, which may contain characters that are not allowed in the model name field when creating the model server.
+
+[source,bash]
+----
+---served-model-name="ibm-granite/granite-3.2-8b-instruct"
+----
 ====
 
 . Once you have the model name, find the `POST /v1/chat/completions` endpoint and use the `Try it out` and use the following as the Request body.
@@ -385,10 +397,30 @@ There is a known issue that can cause the OCP Web console to stop responding aft
     }
   ]
 }
-----
+---- 
+
++
+image::03-llm-docs-strawberry.png[Chat completion]
 
 +
 You should receive a response with an answer to the question.
 
 +
-image::03-llm-docs-strawberry.png[Strawberries]
+image::03-completion-response.png[Completion Response]
+
+== Conclusion
+
+Congratulations!  You have successfully deployed a model with vLLM on a single node with multiple GPUs.
+
+In this lab you learned how to:
+
+* Deploy a model with vLLM on a single node with multiple GPUs
+* Check the GPU usage of the model server
+* Test the vLLM endpoint
+
+[WARNING]
+====
+Running into a 404 error on the OCP web console after trying this?
+
+There is a known issue that can cause the OCP Web console to stop responding after accessing the Swagger docs.  To get around this, try accessing the OCP Web console through an Incognito window or a different browser.
+====
