@@ -229,6 +229,21 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ----
 
+. Check the status of the pod again to see that the pod is now ready.
+
++
+[source,bash,role="execute"]
+----
+oc get pods -n vllm
+----
+
++
+[source,bash]
+----
+NAME                                               READY   STATUS    RESTARTS   AGE
+granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          1337s
+----
+
 . (Optional) The OpenShift AI Dashboard created two KServe objects, a `ServingRuntime` and an `InferenceService`.  From the OpenShift Web Console, navigate to the `Home` > `Search` page and use the `Resources` drop down menu to search for and select those objects.  Spend a few minutes reviewing the objects created by the Dashboard.
 
 +
