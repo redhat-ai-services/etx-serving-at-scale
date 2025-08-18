@@ -158,7 +158,8 @@ Note that there are is an init container that helps to validate the model files 
 oc logs -l serving.knative.dev/service=granite-8b-predictor -n vllm --follow
 ----
 
-+ You can exit the logs by pressing `Ctrl+C`.
++
+You can exit the logs by pressing `Ctrl+C`.
 
 +
 You will find that the pod with eventually fail with the following error message.
