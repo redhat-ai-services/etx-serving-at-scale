@@ -59,6 +59,14 @@ Require token authentication: Unchecked
 ----
 
 +
+[WARNING]
+====
+In OpenShift AI 2.22, a validate was added to the Requests/Limits for the model server which prevents you from entering a value for the Request if it is less than the Limit.  This means that you must enter the value for the Limit first, and then you can enter the value for the Request.
+
+Feel free to vote/follow the feature request https://issues.redhat.com/browse/RHAIRFE-483[RHAIRFE-483] to help us improve this experience.
+====
+
++
 image::03-deploy-model-single-gpu.png[Model Options]
 
 +
