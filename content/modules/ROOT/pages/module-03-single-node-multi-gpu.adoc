@@ -112,7 +112,7 @@ Additionally, the source for building these ModelCar images can be found on http
 For more information on ModelCar see the KServe https://kserve.github.io/website/latest/modelserving/storage/oci/[Serving models with OCI images] documentation.
 ====
 
-. Click `Deploy` to deploy the model.
+. 
 
 +
 [TIP]
@@ -139,7 +139,7 @@ spec:
 . After creating the model serving instance, check the pods in the `vllm` namespace.  You should see a pod called `granite-8b-predictor-00001-deployment-*`
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 oc get pods -n vllm
 ----
