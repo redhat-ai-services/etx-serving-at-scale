@@ -52,9 +52,25 @@ image::MAASSetupDev.png[]
 
 
 
+=== Retrieve the Routes for the vLLM models deployed in the previous lab
+
+[source,bash,role="execute",subs="+macros,+attributes"]
+----
+oc get routes -n vllm -o custom-columns=NAME:.metadata.name,URL:.spec.host
+----
+[source,bash,role="execute",subs="+macros,+attributes"]
+----
+NAME                    URL
+vllm-multi-node-llama   vllm-multi-node-llama-vllm.apps.ocp.xmqvx.sandbox2008.opentlc.com
+vllm-single-node-llama   vllm-single-node-llama-vllm.apps.ocp.xmqvx.sandbox2008.opentlc.com
+vllm-whospayingattention vllm-whospayingattention-vllm.apps.ocp.xmqvx.sandbox2008.opentlc.com
+vllm-kansasisntkentucky vllm-kansasisntkentucky-vllm.apps.ocp.xmqvx.sandbox2008.opentlc.com
+----
+
+
 == Configuring 3Scale
 
-You are ready to create a new Product based on the model you deployed in the previous module. To do that we are going to use the 3Scale operator. This will show you how you can fully automate the deployment of new models in your service.
+You are ready to create a new Products for the models you deployed in the previous lab. To do that we are going to use the 3Scale operator. This will show you how you can fully automate the deployment of new models in your service.
 
 The order of deployment is 
 
@@ -62,6 +78,19 @@ The order of deployment is
 1. Create Product -> Defines the mapping rules, security, metrics and policies for the model endpoint
 1. Create API document -> OpenAPI definition of the service
 1. Create API ProxyConfigPromote -> Promotes the product into production
+
+[NOTE]
+You will need to do this for each model you're configuring
+
+
+[NOTE]
+All of the following commands are done via the OpenShift UI via the *Quick Create* UI element
+
+
+image::MAAS-CreateResources.png[]
+
+
+
 
 
 === Creating the backend for the product
@@ -81,7 +110,7 @@ spec:
   systemName: llama70b
 ----
 
-=== Creating a new Product in 3Scale
+=== Creating a new 3Scale Product 
 
 Copy and paste the following _yaml_ into the UI
 
@@ -234,20 +263,24 @@ spec:
   production: true
 ----
 
-uut* Finally, we must subscribe our user to this new product, as we did previously for Granite. Again, this is normally something you would automate as part of a deployment of a new product, but here we are going to do it in the 3Scale Admin Portal. Go to `Audience->Listing`, select `user1` account.
+* Finally, we must subscribe our user to this new product. Again, this is normally something you would automate as part of a deployment of a new product, but here we are going to do it in the 3Scale Admin Portal. Go to `Audience->Listing`, select `user1` account.
 +
 [.bordershadow]
-image::MAASUser Service Subscription.png[]
+
+image:Maas-Sub_model.png[]
 
 * In the account section, select the `Service Subscriptions` tab at the right.
-+
-[.bordershadow]
-image::MAASSubscriptions.png[]
 
 * At the bottom right of the page, click on the `Subscribe` button on the `LLama70B` item.
 +
 
 * Finally select the `Default` Plan and click on `Create subscription`.
+
+image::Maas-Plan.png[]
+
+[.bordershadow]
+
+image::MAASSubscriptions.png[]
 
 === Testing the Product
 
