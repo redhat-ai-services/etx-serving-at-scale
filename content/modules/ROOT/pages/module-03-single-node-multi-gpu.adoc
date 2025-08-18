@@ -176,7 +176,7 @@ image::03-edit-model-config.png[Edit configuration]
 . Update `Number of accelerators` to 2, and in the `Additional serving runtime arguments` add the following:
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 --tensor-parallel-size=2
 ----
@@ -187,9 +187,13 @@ image::03-deploy-model-parameters.png[Runtime Arguments]
 . This will create an updated deployment called `granite-8b-predictor-00002-deployment-*`: 
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get pods -n vllm
+----
+
++
+[source,bash]
 NAME                                               READY   STATUS    RESTARTS   AGE
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
 ----
@@ -197,9 +201,13 @@ granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0    
 . Follow the logs of the pod until it is ready.
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
-oc logs -n vllm -f granite-8b-predictor-00002-deployment-<sha>>
+oc logs -l serving.knative.dev/service=granite-8b-predictor -n vllm --follow
+----
+
++
+[source,bash]
 INFO 07-16 07:53:42 [__init__.py:239] Automatically detected platform cuda.
 INFO 07-16 07:53:45 [api_server.py:1034] vLLM API server version 0.8.5.dev411+g7ad990749
 [...]
@@ -220,9 +228,13 @@ In this section we will explore what GPU resources are available to the vLLM pod
 . To rsh into the pod, start out by getting the pod name:
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get pods -n vllm
+----
+
++
+[source,bash]
 NAME                                               READY   STATUS    RESTARTS   AGE
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          17s
 ----
@@ -230,18 +242,22 @@ granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0    
 . Next, use the pod name to rsh into the pod:
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
-oc -n vllm rsh granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn
+oc -n vllm rsh granite-8b-predictor-00002-deployment-<sha>
 ----
 
 . Finally, run the `nvidia-smi` command to view the available GPUs and the vRAM utilization.
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 nvidia-smi
-Thu Jul 17 12:56:28 2025
+----
+
++
+[source,bash]
+----
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 570.148.08             Driver Version: 570.148.08     CUDA Version: 12.8     |
 |-----------------------------------------+------------------------+----------------------+
