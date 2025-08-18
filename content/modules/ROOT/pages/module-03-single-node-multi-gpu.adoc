@@ -258,14 +258,13 @@ In this section we will explore what GPU resources are available to the vLLM pod
 +
 [source,bash,role="execute"]
 ----
-oc get pods -n vllm
+oc get pods -l serving.knative.dev/service=granite-8b-predictor -n vllm -o name
 ----
 
 +
 [source,bash]
 ----
-NAME                                               READY   STATUS    RESTARTS   AGE
-granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          17s
+pod/granite-8b-predictor-00002-deployment-<sha>
 ----
 
 . Next, use the pod name to rsh into the pod:
@@ -295,11 +294,11 @@ nvidia-smi
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA L4                      On  |   00000000:38:00.0 Off |                    0 |
-| N/A   62C    P0             38W /   72W |   21582MiB /  23034MiB |      0%      Default |
+| N/A   62C    P0             38W /   72W |   \e[31m21582MiB\e[0m / /  23034MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA L4                      On  |   00000000:3E:00.0 Off |                    0 |
-| N/A   58C    P0             35W /   72W |   21582MiB /  23034MiB |      0%      Default |
+| N/A   58C    P0             35W /   72W |   \e[31m21582MiB\e[0m / /  23034MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 
