@@ -180,7 +180,7 @@ NAME                                               READY   STATUS    RESTARTS   
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   3/4     Running   0          17s
 ----
 
-. +
+.
 Follow the logs of the pod until it is ready.
 
 +
