@@ -294,11 +294,11 @@ nvidia-smi
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA L4                      On  |   00000000:38:00.0 Off |                    0 |
-| N/A   62C    P0             38W /   72W |   \e[31m21582MiB\e[0m / /  23034MiB |      0%      Default |
+| N/A   62C    P0             38W /   72W |   21582MiB /  23034MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA L4                      On  |   00000000:3E:00.0 Off |                    0 |
-| N/A   58C    P0             35W /   72W |   \e[31m21582MiB\e[0m / /  23034MiB |      0%      Default |
+| N/A   58C    P0             35W /   72W |   21582MiB /  23034MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 
@@ -312,7 +312,14 @@ nvidia-smi
 +-----------------------------------------------------------------------------------------+
 ----
 
-You should see two GPUs available to the pod, and the majority of the vRAM being utilized.
++
+The `nvidia-smi` command will output details about the GPUs available to the pod, and the vRAM being utilized.
+
++
+You should see two GPUs available to the pod, and somewhere around 21574MiB of vRAM being utilized on each GPU.
+
++
+Additionally you will see two `python` processes running, one for each GPU.
 
 == Lab:Testing vLLM Endpoints
 
