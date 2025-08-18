@@ -403,7 +403,7 @@ However, you can set the model name to any value you want by setting an addition
 image::03-llm-docs-strawberry.png[Chat completion]
 
 +
-You should receive a response with an answer to the question.
+Click `Execute` to send the request to the model server.  You should receive a response with an answer to the question.
 
 +
 image::03-completion-response.png[Completion Response]
