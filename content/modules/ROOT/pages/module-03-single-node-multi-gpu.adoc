@@ -147,7 +147,7 @@ oc get pods -n vllm
 +
 [NOTE]
 ====
-Note that there are is an init container that helps to validate the model files are present on the ModelCar container. Additionally, the pod has four containers.  The main container, `kserve-container` is the vLLM container that is responsible for serving the model.  This container will take some time to startup while the rest go to ready fairly quickly.
+Our pod is built with an init container that helps to validate the model files are present on the ModelCar container. Additionally, the pod has four containers.  The main container, `kserve-container` is the vLLM container that is responsible for serving the model.  This container will take some time to startup while the rest go to ready fairly quickly.
 ====
 
 . Next, check the logs of the pod the `kserve-container` container.
