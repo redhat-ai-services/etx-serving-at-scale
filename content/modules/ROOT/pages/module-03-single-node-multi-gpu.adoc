@@ -112,7 +112,7 @@ Additionally, the source for building these ModelCar images can be found on http
 For more information on ModelCar see the KServe https://kserve.github.io/website/latest/modelserving/storage/oci/[Serving models with OCI images] documentation.
 ====
 
-. 
+. Click `Deploy` to deploy the model.
 
 +
 [TIP]
@@ -144,13 +144,17 @@ spec:
 oc get pods -n vllm
 ----
 
-. Next, check the logs of the pod.
++ Note that there are is an init container that helps to validate the model files are present on the ModelCar container. Additionally, the pod has four containers.  The main container, `kserve-container` is the vLLM container that is responsible for serving the model.  This container will take some time to startup while the rest go to ready fairly quickly.
+
+. Next, check the logs of the pod the `kserve-container` container.
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
-oc logs -n vllm -f granite-8b-predictor-00001-deployment-<sha>
+oc logs -l serving.knative.dev/service=granite-8b-predictor -n vllm --follow
 ----
+
++ You can exit the logs by pressing `Ctrl+C`.
 
 +
 You will find that the pod with eventually fail with the following error message.
