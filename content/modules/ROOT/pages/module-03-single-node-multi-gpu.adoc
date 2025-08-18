@@ -244,6 +244,13 @@ NAME                                               READY   STATUS    RESTARTS   
 granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0          1337s
 ----
 
++
+Additionally, in the OpenShift AI Dashboard, you can see the model is successfully deployed and is ready to use, which is signified with the green checkmark in the Status column.
+
++
+image::03-ready-model.png[Dashboard Model Ready]
+
+
 . (Optional) The OpenShift AI Dashboard created two KServe objects, a `ServingRuntime` and an `InferenceService`.  From the OpenShift Web Console, navigate to the `Home` > `Search` page and use the `Resources` drop down menu to search for and select those objects.  Spend a few minutes reviewing the objects created by the Dashboard.
 
 +
