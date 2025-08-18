@@ -206,6 +206,7 @@ In this section we will explore what GPU resources are available to the vLLM pod
 
 . To rsh into the pod, start out by getting the pod name:
 
++
 [source,bash]
 ----
 oc get pods -n vllm
@@ -215,6 +216,7 @@ granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0    
 
 . Next, use the pod name to rsh into the pod:
 
++
 [source,bash]
 ----
 oc -n vllm rsh granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn
@@ -222,6 +224,7 @@ oc -n vllm rsh granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn
 
 . Finally, run the `nvidia-smi` command to view the available GPUs and the vRAM utilization.
 
++
 [source,bash]
 ----
 nvidia-smi
@@ -295,7 +298,7 @@ There is a known issue that can cause the OCP Web console to stop responding aft
 
 . Once you have the model name, find the `POST /v1/chat/completions` endpoint and use the `Try it out` and use the following as the Request body.
 
-
++
 [source,json]
 ----
 {
@@ -313,6 +316,8 @@ There is a known issue that can cause the OCP Web console to stop responding aft
 }
 ----
 
++
 You should receive a response with an answer to the question.
 
++
 image::03-llm-docs-strawberry.png[Strawberries]
