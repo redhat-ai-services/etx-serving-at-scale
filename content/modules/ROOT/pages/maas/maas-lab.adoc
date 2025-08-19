@@ -266,7 +266,7 @@ spec:
 +
 [.bordershadow]
 
-image:Maas-Sub_model.png[]
+image::maas/Maas-Sub_model.png[]
 
 * In the account section, select the `Service Subscriptions` tab at the right.
 
