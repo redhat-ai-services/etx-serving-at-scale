@@ -21,7 +21,7 @@ A solution providing AI models as a *Service* to a larger audience
 
 
 .High Level View
-image::MAAS-Arch-drawio.png[MaaS]
+image::maas/arch-drawio.png[MaaS]
 
 
 == Why do Customers need it
@@ -40,13 +40,13 @@ Throwing GPUs at the problem is wateful and ineffective
 
 .Why do customers need it
 [.bordered]
-image::MAAS-sales-slide.png[MaaS]
+image::maas/sales-slide.png[MaaS]
 
 ***
 
 == What does Red Hat currently have
 .In House solution
-image::MAAS-BUHosted.png[]
+image::maas/bu-hosted.png[]
 
 Developed by the BU CAI team using RH Technology stack
 
@@ -65,18 +65,18 @@ The MaaS solution stack consists of Red Hat OpenShift AI, API Gateway and SSO.
  * User/Client – Requests a token from Keycloak, then calls the model via 3scale using that token.
 
 .Red Hat Products
-image::MAAS-Arch.RedhatProd.png[]
+image::maas/arch-redhat-prod.png[]
 
  ***
 
 .Solution architecture
-image::MAAS-3scale architecture.png[]
+image::maas/3scale-architecture.png[]
 
 
 === Logical Architecture of MaaS to move to capability focus instead of product focus
 
 .Logical Architecture
-image::MaaS-ld.png[MaaS]
+image::maas/ld.png[MaaS]
 
 
  ***

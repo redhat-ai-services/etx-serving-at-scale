@@ -34,7 +34,7 @@ Now you can log into the 3Scale admin portal as the _admin_ user at https://maas
 You will be prompted by a wizard window. Close it by clicking on the top right corner of the screen.
 
 [.bordershadow]
-image::MAAS3ScaleStart.png[]
+image::maas/3scale-start.png[]
 
 === Enabling access to the Developer Portal
 
@@ -45,7 +45,7 @@ A user (non-admin) was already created for you in 3Scale in (Audience->Accounts-
 * On the Audience section, got to Developer Portal->Settings->Domains & Access.
 +
 [.bordershadow]
-image::MAASSetupDev.png[]
+image::maas/setup-dev.png[]
 
 * The Developer Portal Access Code is used to control the access the developer portal. Simply delete it and click on `Update Account` to remove the access code and allow anyone to access the developer portal, although they will still need to authenticate. 
 
@@ -86,7 +86,7 @@ Each model will require a unique *name, systemName, productSystemName*. We recom
 All of the following commands are done via the OpenShift UI via the *Quick Create* UI element
 
 
-image::MAAS-CreateResources.png[]
+image::maas/create-resources.png[]
 
 
 === Creating the backend for the product
@@ -274,11 +274,11 @@ image:Maas-Sub_model.png[]
 
 * Finally select the `Default` Plan and click on `Create subscription`.
 
-image::Maas-Plan.png[]
+image::maas/plan.png[]
 
 [.bordershadow]
 
-image::MAASSubscriptions.png[]
+image::maas/subscriptions.png[]
 
 === Testing the Product
 
@@ -286,22 +286,22 @@ You can now test this new Product
 
 * Connect to the Developer Portal at `https://maas.{openshift_cluster_ingress_domain}[https://maas.{openshift_cluster_ingress_domain},window=_blank]` and log in using the `user1` & `openshift` credentials.
 
-image::Maas-Login-button.png[]
+image::maas/login-button.png[]
 
 * Click on the `See your Applications and their credentials` link on the front page.
 
 * Click on the `Create new application` button.
 
-image::Maas-CreateApplication.png[]
+image::maas/create-application.png[]
 
 * Select the `LLama70B` service.
 
-image::MAASSelectService.png[]
+image::maas/select-service.png[]
 
 * Enter a name for your application, for example `LLama70B application`. Click on `Create Application`.
 
 [.bordershadow]
-image::Maas-AppCreated.png[]
+image::maas/app-created.png[]
 
 * Your application has been created. You can see the `Endpoint URL` you can use to connect to the API and the `API key` that has been generated for you. You can now use this key to access the API.
 
