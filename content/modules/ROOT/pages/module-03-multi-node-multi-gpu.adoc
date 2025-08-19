@@ -14,7 +14,14 @@ Multi-node instances do not have all of the same capabilities as a single node i
 
 == Lab: Deploying a Multi-node vLLM Instance
 
-Multi-node vLLM is a Tech Preview feature and is not supported in the OpenShift AI Dashboard.  However, we can still deploy it using the CLI.
+In this section we will deploy a multi-node vLLM instance with two nodes, each with two GPUs.
+
+For this lab, we will continue to use the `vllm` namespace.
+
+[NOTE]
+====
+Multi-node vLLM is a Tech Preview feature and is not supported in the OpenShift AI Dashboard.  For this lab, we will be deploying the vLLM instance using the CLI.
+====
 
 [TIP]
 ====
@@ -24,31 +31,49 @@ Refer to the official documentation for more information on how to deploy a mult
 . To start, we need to process and deploy a template from the ```redhat-ods-applications``` project:
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 oc process vllm-multinode-runtime-template -n redhat-ods-applications | oc apply -n vllm -f -
 ----
 
+[TIP]
+====
+The OpenShift AI Dashboard provides several out of the box "Serving Runtimes" for different models servers.  These can be found in the "Serving Runtimes" section in the OpenShift AI Dashboard under "Settings" if you are an Admin.  These "Serving Runtimes" are OpenShift Templates similar to the one we use above.  These templates container a copy of a `ServingRuntime` object and when using the UI to deploy a model the template is processed to create a `ServingRuntime` object in the namespace.
+====
+
 . Processing the template will create a `ServingRuntime` object in the `vllm` namespace called `vllm-multinode-runtime`.  Take a moment and explore the ServingRuntime to see what it contains:
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 oc get servingruntime vllm-multinode-runtime -n vllm -o yaml
 ----
 
-. We have already created a ReadWriteMany (RWX) PVC for the model in the `vllm` namespace and loaded https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16[Llama-3.3-70B-Instruct-quantized.w4a16] into it.  Take a moment to explore the PVC to see what it contains:
+[NOTE]
+====
+As of 2.22 the `ServingRuntime` object must be named `vllm-multinode-runtime` in order for the odh-model-controller to automatically setup the Ray TLS certs needed for multi-node deployments.  In newer versions of RHOAI any name can be used for the model server.
+====
+
+. We have already created a ReadWriteMany (RWX) PVC for the model in the `vllm` namespace and loaded https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16[Llama-3.3-70B-Instruct-quantized.w4a16] into it.  Take a moment to review the PVC:
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 oc get pvc llama-model -n vllm
+oc describe pvc llama-model -n vllm
 ----
 
-. Next, we will need to create the `InferenceService` object that will be used to serve the model.
+[NOTE]
+====
+Multi-node vLLM supports both `ReadWriteMany` PVCs and ModelCar images for serving.  S3 buckets are not supported for multi-node deployments.
+
+ReadWriteOnce PVCs are not supported for multi-node deployments since the PVC must be mounted to both the `head` and `worker` pods.
+====
+
+. Next, we will need to create the `InferenceService` object that will be used to serve the model.  Copy the following YAML into a file and create it on the cluster using `oc apply` or copy and paste it into the OpenShift Web Console using the `+` button in the top right corner of the screen.
 
 +
-[source,yaml]
+[source,shell,role="execute"]
 ----
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
@@ -64,7 +89,7 @@ spec:
     minReplicas: 1
     model:
       args: # 3
-      - --max-model-len=100000
+        - --max-model-len=100000
       modelFormat:
         name: vLLM
       name: ""
@@ -80,27 +105,27 @@ spec:
       runtime: vllm-multinode-runtime
       storageUri: pvc://llama-model/Llama-3.3-70B-Instruct-quantized.w4a16 # 4
     tolerations:
-    - effect: NoSchedule
-      key: nvidia.com/gpu
-      operator: Exists
-    workerSpec:
-      containers:
-      - name: worker-container
-        resources:
-          limits:
-            cpu: "8"
-            memory: 12Gi
-            nvidia.com/gpu: "2"
-          requests:
-            cpu: "4"
-            memory: 8Gi
-            nvidia.com/gpu: "2"
-      pipelineParallelSize: 2 # 5
-      tensorParallelSize: 2 # 6
-      tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
         operator: Exists
+    workerSpec:
+      containers:
+        - name: worker-container
+          resources:
+            limits:
+              cpu: "8"
+              memory: 12Gi
+              nvidia.com/gpu: "2"
+            requests:
+              cpu: "4"
+              memory: 8Gi
+              nvidia.com/gpu: "2"
+      pipelineParallelSize: 2 # 5
+      tensorParallelSize: 2 # 6
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
 ----
 
 +
@@ -114,12 +139,42 @@ spec:
 . Once the `InferenceService` is created, we can see the two new pods that have been created.  The `vllm-multi-node-llama-predictor-head-<hash>` pod is the `head` node and the `vllm-multi-node-llama-predictor-worker-<hash>` pod is the `worker` node.
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 oc get pods -n vllm
 ----
 
++
+Alternatively, you can use the `watch` command or flag to follow the status of the pods.
+
++
+[source,shell,role="execute"]
+----
+watch oc get pods -n vllm
+----
+
++
+or
+
++
+[source,shell,role="execute"]
+----
+oc get pods -n vllm --watch
+----
+
 . Check the logs of both the `head` and `worker` pods.  You should see a `ray` cluster starting in the `head` pod followed by some logs from vllm starting up.  In the `worker` you will see a the `ray` instance starting and the worker pod will join the cluster.
+
++
+Head logs:
+
++
+image::03-multinode-head-logs.png[Multi-node Head Logs]
+
++
+Worker logs:
+
++
+image::03-multinode-worker-logs.png[Multi-node Worker Logs]
 
 +
 [NOTE]
@@ -134,15 +189,15 @@ Additionally, the multi-node vLLM should not be confused with https://docs.ray.i
 . Once all of our pods have gone to a fully `Ready` state, we can test the model by sending a request to the `head` pod's endpoint.  We can do this by using the `curl` command to send a request to the `head` pod's endpoint.  First, we will get the route for the vllm endpoint.
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
-oc get route vllm-multi-node-llama-vllm -n vllm -o jsonpath='{.spec.host}'
+oc get route vllm-multi-node-llama -n vllm -o jsonpath='{.spec.host}'
 ----
 
 . Next we will use the route URL to perform a curl request to get the name of the model form the models endpoint.
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 curl https://vllm-multi-node-llama-vllm.{openshift_cluster_ingress_domain}/v1/models
 ----
@@ -150,13 +205,13 @@ curl https://vllm-multi-node-llama-vllm.{openshift_cluster_ingress_domain}/v1/mo
 . Next, we can use curl to send a prompt to the model.  We will use the `-d` option to send a JSON payload to the model.
 
 +
-[source,shell]
+[source,shell,role="execute"]
 ----
 curl -X POST https://vllm-multi-node-llama-vllm.{openshift_cluster_ingress_domain}/v1/chat/completions \
     -H "Content-Type: application/json" \
     -d '{
       "model": "vllm-multi-node-llama",
-      "prompt": "Explain what the following regex statement does: `^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$`",
+      "prompt": "Write a function in Python that determines if a number is prime.  Explain your approach.  Follow the PEP 8 style guide.",
       "max_tokens": 500
     }'
 ----
