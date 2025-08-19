@@ -9,7 +9,7 @@ GPU sharing is a technique that allows multiple workloads to share a GPU. This i
 - CUDA Multi-Process Service (MPS)
 
 .GPU Partitioning Strategies
-image::gpu-sharing-overview.png[GPU Sharing Overview, 600]
+image::gpu-management/gpu-sharing-overview.png[GPU Sharing Overview, 600]
 
 == Pros and Cons of GPU Sharing Methods
 

@@ -5,7 +5,7 @@
 Data Parallelism (DP) replicates the model across multiple GPUs. Data batches are evenly distributed between GPUs and the data-parallel GPUs process them independently. While the computation workload is efficiently distributed across GPUs, inter-GPU communication is required in order to keep the model replicas consistent between training steps.
 
 .Distributed Data Parallelism
-image::ddp.gif[Distributed Data Parallelism, 600]
+image::gpu-management/ddp.gif[Distributed Data Parallelism, 600]
 
 The two types of data parallelism are: 
 

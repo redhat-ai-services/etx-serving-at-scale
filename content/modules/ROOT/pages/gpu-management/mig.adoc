@@ -29,7 +29,7 @@ Each instance has:
 
 Think of MIG as creating apartment units in a building - each tenant gets their own space with guaranteed resources, but they share the building's infrastructure efficiently.
 
-image::gpu-mig-overview.jpg[MIG Overview, 600]
+image::gpu-management/gpu-mig-overview.jpg[MIG Overview, 600]
 
 === Real-World Benefits
 
@@ -84,7 +84,7 @@ Physical A100-40GB GPU:
 └── Various engines (NVDECs, encoders, etc.)
 ----
 
-image::mig-example.png[MIG partitioning, 600]
+image::gpu-management/mig-example.png[MIG partitioning, 600]
 
 === Creating GPU Instances
 

@@ -18,7 +18,7 @@ The core principle revolves around the sparse activation pattern of MoE models:
 For example, in a model with 8 experts distributed across 4 GPUs (2 experts per GPU), each input token activates only 2 experts. The router determines which experts to use, and only those specific GPUs perform computation while others remain idle for that token.
 
 .Expert parallelism with dedicated GPU assignment
-image::gpu5.png[Expert Parallelism Overview, 600]
+image::gpu-management/gpu5.png[Expert Parallelism Overview, 600]
 
 == Mixture of Experts (MoE) Models
 
@@ -36,7 +36,7 @@ Specialized sub-networks (usually feed-forward networks) that process specific t
 Mechanisms to ensure experts are utilized evenly, preventing some experts from being overused while others remain underutilized.
 
 .MoE model architecture with expert routing
-image::gpu7.png[MoE Architecture, 600]
+image::gpu-management/gpu7.png[MoE Architecture, 600]
 
 === Sparse Activation Benefits
 
