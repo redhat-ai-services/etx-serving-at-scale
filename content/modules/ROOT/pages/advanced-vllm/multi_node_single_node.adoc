@@ -14,7 +14,7 @@ image::advanced-vllm/single-node-multi-gpu.png[Single Node Multi-GPU]
 
 vLLM will automatically shard the model across the GPUs and expand the memory available for the KV Cache.
 
-For more information on Tensor Parallelism see xref:module-02-tensor_parallelism.adoc[Tensor Parallelism].
+For more information on Tensor Parallelism see xref:../gpu-management/tensor_parallelism.adoc[Tensor Parallelism].
 
 == Multi-node vLLM
 

@@ -68,8 +68,9 @@ Many modern editors such as Visual Studio Code offer live Asciidoc Preview exten
 ├── nav.adoc                         # Navigation for your lab
 ├── pages                            # Your content goes here
 │   ├── index.adoc                   # First page of your lab, e.g. overview etc
-│   ├── module-01.adoc
-│   └── module-02.adoc               # Sample lab has 2 modules including index.adoc
+│   ├── maas/                        # Model as a Service content
+│   ├── gpu-management/              # Advanced GPU Configuration content
+│   └── advanced-vllm/               # Model Serving with vLLM content
 └── partials                         # You can add partials here, reusable content inserted inline into your modules
     └── example_partial.adoc
 ----
