@@ -53,7 +53,7 @@ NOTE: If you don't already have Helm installed, please refer to the official doc
 . To begin, we will add the Red Hat AI Services Helm repository to our Helm client and pull the latest charts:
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 helm repo add redhat-ai-services https://redhat-ai-services.github.io/helm-charts/
 helm repo update redhat-ai-services
@@ -62,7 +62,7 @@ helm repo update redhat-ai-services
 . Next, we will update our Helm client to pull the latest charts from the repository:
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 helm upgrade -i granite-guardian redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set fullnameOverride="granite-guardian" \
@@ -100,7 +100,7 @@ In our previous lab sections, we deployed our models using the OpenShift AI Dash
 . Helm will not allow us to redeploy the same model with the same name, so we will need to delete the existing InferenceService and ServingRuntime.
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc delete inferenceservice granite-8b
 oc delete servingruntime granite-8b
@@ -119,7 +119,7 @@ If you are updating the objects using ArgoCD, these manually changes should not 
 . Next, we can deploy the model with the same options we used in the previous lab.
 
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
   --set fullnameOverride="granite-8b" \
