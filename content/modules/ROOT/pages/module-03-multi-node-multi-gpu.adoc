@@ -161,6 +161,7 @@ curl -X POST https://vllm-multi-node-llama-vllm.{openshift_cluster_ingress_domai
     }'
 ----
 
++
 [TIP]
 ====
 If you are working with a model that has a secured endpoint, you can add the `Authorization` header to the curl request.
