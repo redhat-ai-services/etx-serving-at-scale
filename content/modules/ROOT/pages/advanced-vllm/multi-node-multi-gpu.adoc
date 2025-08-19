@@ -168,13 +168,13 @@ oc get pods -n vllm --watch
 Head logs:
 
 +
-image::03-multinode-head-logs.png[Multi-node Head Logs]
+image::advanced-vllm/multinode-head-logs.png[Multi-node Head Logs]
 
 +
 Worker logs:
 
 +
-image::03-multinode-worker-logs.png[Multi-node Worker Logs]
+image::advanced-vllm/multinode-worker-logs.png[Multi-node Worker Logs]
 
 +
 [NOTE]

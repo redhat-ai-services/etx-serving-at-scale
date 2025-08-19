@@ -8,7 +8,7 @@ One of the first calculations needed to help understand if a model will run on a
 
 The size of the model loaded into vRAM can be estimated using the following formula:
 
-image::03-model-sizing-formula.png[Model Sizing Formula]
+image::advanced-vllm/model-sizing-formula.png[Model Sizing Formula]
 
 
 [cols="1,1"]

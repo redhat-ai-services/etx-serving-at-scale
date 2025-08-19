@@ -10,7 +10,7 @@ NOTE: While multi-node vLLM does use Ray to distribute the model across multiple
 
 vLLM can consume additional GPUs available to the container using the `--tensor-parallel-size` flag, with the value equal to the number of GPUs available.
 
-image::03-single-node-multi-gpu.png[Single Node Multi-GPU]
+image::advanced-vllm/single-node-multi-gpu.png[Single Node Multi-GPU]
 
 vLLM will automatically shard the model across the GPUs and expand the memory available for the KV Cache.
 
@@ -26,7 +26,7 @@ Mutli-node vLLM deploys multiple vLLM containers that communicate with each othe
 
 Each worker can also access multiple GPUs available to that node using `--tensor-parallel-size`.
 
-image::03-multi-node-multi-gpu.png[Multi Node Multi-GPU]
+image::advanced-vllm/multi-node-multi-gpu.png[Multi Node Multi-GPU]
 
 === Limitations of Multi-Node vLLM
 

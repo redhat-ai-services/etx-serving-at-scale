@@ -18,7 +18,7 @@ Treating the model as an OCI artifact allows us to easily promote the model betw
 . Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}[OpenShift AI Dashboard] and select the `vllm` project from the list of Data Science Projects
 
 +
-image::03-datascience-project.png[vLLM Project]
+image::advanced-vllm/datascience-project.png[vLLM Project]
 
 . Select the `Models` tab and click `Select single-model` if it hasn't already been set for you.
 
@@ -31,12 +31,12 @@ All ServingRuntimes that were previously available with the Multi-model serving 
 ====
 
 +
-image::03-single-model-serving.png[Single Model]
+image::advanced-vllm/single-model-serving.png[Single Model]
 
 . Select `Deploy model`
 
 +
-image::03-deploy-model.png[Deploy Models]
+image::advanced-vllm/deploy-model.png[Deploy Models]
 
 . Enter the following information:
 
@@ -67,7 +67,7 @@ Feel free to vote/follow the feature request https://issues.redhat.com/browse/RH
 ====
 
 +
-image::03-deploy-model-single-gpu.png[Model Options]
+image::advanced-vllm/deploy-model-single-gpu.png[Model Options]
 
 +
 [NOTE]
@@ -90,7 +90,7 @@ URI: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
 ----
 
 +
-image::03-deploy-model-data-connection.png[URI Connection]
+image::advanced-vllm/deploy-model-data-connection.png[URI Connection]
 
 +
 [TIP]
@@ -176,12 +176,12 @@ vLLM is failing to start because it does not have enough vRAM to support the siz
 . From the `Models` tab of the OpenShift AI Dashboard, click on the three-dots menu on the right and then edit:
 
 +
-image::03-edit-model-config.png[Edit configuration]
+image::advanced-vllm/edit-model-config.png[Edit configuration]
 
 . Update `Number of accelerators` to 2: 
 
 +
-image::03-accelerators.png[Accelerator count]
+image::advanced-vllm/accelerators.png[Accelerator count]
 
 +
 Then add the following to the `Additional serving runtime arguments` field:
@@ -193,7 +193,7 @@ Then add the following to the `Additional serving runtime arguments` field:
 ----
 
 +
-image::03-deploy-model-parameters.png[Runtime Arguments]
+image::advanced-vllm/deploy-model-parameters.png[Runtime Arguments]
 
 . This will create an updated deployment called `granite-8b-predictor-00002-deployment-*`: 
 
@@ -248,13 +248,13 @@ granite-8b-predictor-00002-deployment-6f7cdc67bd-8lhkn   4/4     Running   0    
 Additionally, in the OpenShift AI Dashboard, you can see the model is successfully deployed and is ready to use, which is signified with the green checkmark in the Status column.
 
 +
-image::03-ready-model.png[Dashboard Model Ready]
+image::advanced-vllm/ready-model.png[Dashboard Model Ready]
 
 
 . (Optional) The OpenShift AI Dashboard created two KServe objects, a `ServingRuntime` and an `InferenceService`.  From the OpenShift Web Console, navigate to the `Home` > `Search` page and use the `Resources` drop down menu to search for and select those objects.  Spend a few minutes reviewing the objects created by the Dashboard.
 
 +
-image::03-kserve-objects.png[KServe Objects]
+image::advanced-vllm/kserve-objects.png[KServe Objects]
 
 == Lab: Checking our GPU usage
 
@@ -337,7 +337,7 @@ Finally, we will access the Swagger docs page to test our vLLM endpoint.
 . To start we will need to find the endpoint URL for the served model.  From the OpenShift AI Dashboard, navigate to the Models tab and click on the `Internal and external endpoint details` to find the URL.  Click the `Copy` button to copy the URL to your clipboard.
 
 +
-image::03-deploy-model-route.png[Model endpoint]
+image::advanced-vllm/deploy-model-route.png[Model endpoint]
 
 +
 [NOTE]
@@ -354,17 +354,17 @@ oc get routes.serving.knative.dev -n vllm
 . Using the route we copied in the previous step, open a new tab and paste it into the URL field with `/docs` at the end to access a FastAPI Swagger Docs page for vLLM.
 
 +
-image::03-model-docs-page.png[Docs page]
+image::advanced-vllm/model-docs-page.png[Docs page]
 
 . Find the `GET /v1/models` endpoint section and expand it.  Use the `Try it out` option to query the endpoint by clicking `Execute`.
 
 +
-image::03-llm-docs-run-v1-models.png[V1 Modules]
+image::advanced-vllm/llm-docs-run-v1-models.png[V1 Modules]
 
 . Find the model name in the response body in the `id` field of the first entry in the `data` array.
 
 +
-image::03-model-response.png[Models Response]
+image::advanced-vllm/model-response.png[Models Response]
 
 +
 [TIP]
@@ -400,13 +400,13 @@ However, you can set the model name to any value you want by setting an addition
 ---- 
 
 +
-image::03-llm-docs-strawberry.png[Chat completion]
+image::advanced-vllm/llm-docs-strawberry.png[Chat completion]
 
 +
 Click `Execute` to send the request to the model server.  You should receive a response with an answer to the question.
 
 +
-image::03-completion-response.png[Completion Response]
+image::advanced-vllm/completion-response.png[Completion Response]
 
 == Conclusion
 
