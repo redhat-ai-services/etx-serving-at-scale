@@ -226,7 +226,7 @@ If you are working with a model that has a secured endpoint, you can add the `Au
 -H "Authorization: Bearer <YOUR_TOKEN>"
 ----
 
-The token can be a token that you include in the header can be a token you generate through the OpenShift AI Dashboard, or any user/service account token that has view permission on the `InferenceService` object.
+You can generate a token through the OpenShift AI Dashboard, or use any user/sevice account token that has view permissions on the `InferenceService` object.
 
 To get your OpenShift user token, you can use the following command:
 
@@ -235,3 +235,7 @@ To get your OpenShift user token, you can use the following command:
 oc whoami --show-token
 ----
 ====
+
+== Conclusion
+
+Congratulations!  You have successfully deployed a model with vLLM on a multi-node with multiple GPUs.
