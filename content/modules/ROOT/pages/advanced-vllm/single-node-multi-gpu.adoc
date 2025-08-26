@@ -375,7 +375,7 @@ However, you can set the model name to any value you want by setting an addition
 
 [source,bash]
 ----
----served-model-name="ibm-granite/granite-3.2-8b-instruct"
+--served-model-name="ibm-granite/granite-3.2-8b-instruct"
 ----
 ====
 
