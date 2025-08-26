@@ -162,7 +162,7 @@ oc logs -l serving.knative.dev/service=granite-8b-predictor -n vllm --follow
 You can exit the logs by pressing `Ctrl+C`.
 
 +
-You will find that the pod with eventually fail with the following error message.
+You will find that the pod will eventually fail with the following error message:
 
 +
 [source,options="wrap"]
